@@ -1,56 +1,79 @@
-﻿namespace CartApp.Models
+﻿using CartApp.BusinessLogic.Exceptions;
+
+namespace CartApp.Models
 {
+    /// <summary>
+    /// Represents an item in a shopping cart.
+    /// </summary>
     public class CartItem
     {
-        public int Id { get; private set; }
-        public string Name { get; private set; }
-        public string? ImageUrl { get; private set; }
-        public string? ImageDescription { get; private set; }
-        public decimal Price { get; private set; }
-        public int Quantity { get; private set; }
+        private readonly string? name;
+        private readonly decimal price;
+        private int quantity;
 
-        public CartItem() {}
+        /// <summary>
+        /// Gets or sets the id of the cart item.
+        /// </summary>
+        public required int Id { get; set; }
 
-        public CartItem(int id, string name, decimal price, int quantity, string? imageUrl = null,
-            string? imageDescription = null)
+        /// <summary>
+        /// Gets the name of the item.
+        /// </summary>
+        public required string? Name
         {
-            if (string.IsNullOrEmpty(name))
+            get => this.name;
+            init
             {
-                throw new ArgumentException("Item name is required");
-            }
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ItemNameRequiredException();
+                }
 
-            if (price < 0)
-            {
-                throw new ArgumentException("Price cannot be negative");
+                this.name = value;
             }
-
-            if (quantity < 0)
-            {
-                throw new ArgumentException("Quantity cannot be negative");
-            }
-
-            this.Id = id;
-            this.Name = name;
-            this.Price = price;
-            this.Quantity = quantity;
-            this.ImageUrl = imageUrl;
-            this.ImageDescription = imageDescription;
         }
 
-        public void IncrementQuantity()
+        /// <summary>
+        /// Gets or sets the image URL of the item.
+        /// </summary>
+        public string? ImageUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the image description of the item.
+        /// </summary>
+        public string? ImageDescription { get; set; }
+
+        /// <summary>
+        /// Gets the price of the item.
+        /// </summary>
+        public required decimal Price
         {
-            this.Quantity++;
+            get => this.price;
+            init
+            {
+                if (value < 0)
+                {
+                    throw new NegativePriceException();
+                }
+
+                this.price = value;
+            }
         }
 
-        public void DecrementQuantity()
+        /// <summary>
+        /// Gets or sets the quantity of the item.
+        /// </summary>
+        public int Quantity
         {
-            if (this.Quantity > 0)
+            get => this.quantity;
+            set
             {
-                this.Quantity--;
-            }
-            else
-            {
-                throw new InvalidOperationException("Quantity cannot be negative");
+                if (value < 0)
+                {
+                    throw new NegativeQuantityException();
+                }
+
+                this.quantity = value;
             }
         }
     }

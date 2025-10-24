@@ -1,66 +1,88 @@
 using CartApp.BusinessLogic.Services;
 using CartApp.Models;
 using CartApp.Persistence.Repositories;
+using LiteDB.Async;
 
 namespace CartApp.IntegrationTests
 {
+    /// <summary>
+    /// Integration tests for the CartService.
+    /// </summary>
     public class CartServiceIntegrationTests : IDisposable
     {
         private readonly string testDatabasePath;
         private readonly ICartRepository cartRepository;
         private readonly ICartService cartService;
+        private readonly ILiteDatabaseAsync liteDb;
+        private bool disposed = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CartServiceIntegrationTests"/> class.
+        /// </summary>
         public CartServiceIntegrationTests()
         {
-            testDatabasePath = Path.Combine(Path.GetTempPath(), $"test_cart_{Guid.NewGuid()}.db");
-            cartRepository = new CartRepository(testDatabasePath);
-            cartService = new CartService(cartRepository);
+            this.testDatabasePath = Path.Combine(Path.GetTempPath(), $"test_cart_{Guid.NewGuid()}.db");
+            this.liteDb = new LiteDatabaseAsync(this.testDatabasePath);
+            this.cartRepository = new CartRepository(this.liteDb);
+            this.cartService = new CartService(this.cartRepository);
         }
 
-        public void Dispose()
-        {
-            if (File.Exists(testDatabasePath))
-            {
-                File.Delete(testDatabasePath);
-            }
-        }
-
+        /// <summary>
+        /// Tests that AddCart succeeds with a valid cart.
+        /// </summary>
+        /// <returns>Task.</returns>
         [Fact]
-        public void AddCart_WithValidCart_ShouldSucceed()
+        public async Task AddCart_WithValidCart_ShouldSucceed()
         {
             // Arrange
             var cart = new Cart
             {
                 Id = 1,
-                Items = new List<CartItem>()
+                Items = new List<CartItem>(),
             };
 
             // Act
-            cartService.AddCart(cart);
+            await this.cartService.AddCart(cart);
 
             // Assert
-            var retrievedCart = cartRepository.GetCart(1);
+            var retrievedCart = await this.cartRepository.GetCart(1);
             Assert.NotNull(retrievedCart);
             Assert.Equal(1, retrievedCart.Id);
         }
 
+        /// <summary>
+        /// Tests that GetCartItems returns items for an existing cart.
+        /// </summary>
+        /// <returns>Task.</returns>
         [Fact]
-        public void GetCartItems_WithExistingCart_ShouldReturnItems()
+        public async Task GetCartItems_WithExistingCart_ShouldReturnItems()
         {
             // Arrange
             var cart = new Cart
             {
                 Id = 1,
-                Items = new List<CartItem>()
+                Items = new List<CartItem>(),
             };
-            var item1 = new CartItem(1, "Item 1", 10.99m, 2);
-            var item2 = new CartItem(2, "Item 2", 5.50m, 1);
+            var item1 = new CartItem
+            {
+                Id = 1,
+                Name = "Item 1",
+                Price = 10.99m,
+                Quantity = 2,
+            };
+            var item2 = new CartItem
+            {
+                Id = 2,
+                Name = "Item 2",
+                Price = 5.50m,
+                Quantity = 1,
+            };
             cart.Items.Add(item1);
             cart.Items.Add(item2);
-            cartRepository.CreateCart(cart);
+            await this.cartRepository.CreateCart(cart);
 
             // Act
-            var items = cartService.GetCartItems(1);
+            var items = await this.cartService.GetCartItems(1);
 
             // Assert
             Assert.NotNull(items);
@@ -69,30 +91,76 @@ namespace CartApp.IntegrationTests
             Assert.Contains(items, item => item is { Id: 2, Name: "Item 2" });
         }
 
+        /// <summary>
+        /// Tests that AddItemToCart increments quantity for existing items.
+        /// </summary>
+        /// <returns>Task.</returns>
         [Fact]
-        public void AddItemToCart_WithExistingItem_ShouldIncrementQuantity()
+        public async Task AddItemToCart_WithExistingItem_ShouldIncrementQuantity()
         {
             // Arrange
             var cart = new Cart
             {
                 Id = 1,
-                Items = new List<CartItem>()
+                Items = new List<CartItem>(),
             };
-            var existingItem = new CartItem(1, "Existing Item", 10.99m, 2);
+            var existingItem = new CartItem
+            {
+                Id = 1,
+                Name = "Existing Item",
+                Price = 10.99m,
+                Quantity = 2,
+            };
             cart.Items.Add(existingItem);
-            cartRepository.CreateCart(cart);
+            await this.cartRepository.CreateCart(cart);
 
-            var itemToAdd = new CartItem(1, "Existing Item", 10.99m, 1);
+            var itemToAdd = new CartItem
+            {
+                Id = 1,
+                Name = "Existing Item",
+                Price = 10.99m,
+                Quantity = 1,
+            };
 
             // Act
-            cartService.AddItemToCart(itemToAdd, 1);
+            await this.cartService.AddItemToCart(itemToAdd, 1);
 
             // Assert
-            var retrievedCart = cartRepository.GetCart(1);
+            var retrievedCart = await this.cartRepository.GetCart(1);
             Assert.NotNull(retrievedCart);
-            Assert.Single(retrievedCart.Items);
-            var updatedItem = retrievedCart.Items.First();
+            Assert.Single(retrievedCart.Items!);
+            var updatedItem = retrievedCart.Items!.First();
             Assert.Equal(3, updatedItem.Quantity);
+        }
+
+        /// <summary>
+        /// Disposes the test resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes the test resources.
+        /// </summary>
+        /// <param name="disposing">Whether disposing is in progress.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    this.liteDb.Dispose();
+                    if (File.Exists(this.testDatabasePath))
+                    {
+                        File.Delete(this.testDatabasePath);
+                    }
+                }
+
+                this.disposed = true;
+            }
         }
     }
 }

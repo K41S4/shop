@@ -1,21 +1,29 @@
-﻿using InvalidOperationException = System.InvalidOperationException;
+﻿using Catalog.Core.Exceptions;
 
 namespace Catalog.Core.Entities.ValueObjects
 {
+    /// <summary>
+    /// Represents a name value object with validation.
+    /// </summary>
     public class Name
     {
-        public string Value { get; }
+        private readonly string? nameValue;
 
-        private Name() {}
-
-        public Name(string name)
+        /// <summary>
+        /// Gets the name value. Must not be null, empty, or exceed 50 characters.
+        /// </summary>
+        public required string? Value
         {
-            if (name.Length > 50)
+            get => this.nameValue;
+            init
             {
-                throw new InvalidOperationException("Name must be less than 50 characters.");
-            }
+                if (string.IsNullOrEmpty(value) || value.Length > 50)
+                {
+                    throw new InvalidNameException();
+                }
 
-            this.Value = name;
+                this.nameValue = value;
+            }
         }
     }
 }

@@ -1,40 +1,45 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Catalog.Core.Entities.ValueObjects;
+﻿using Catalog.Core.Entities.ValueObjects;
 
 namespace Catalog.Core.Entities
 {
+    /// <summary>
+    /// Represents a product in the catalog.
+    /// </summary>
     public class Product
     {
-        public int Id { get; private set; }
+        /// <summary>
+        /// Gets or sets the id of the product.
+        /// </summary>
+        public int Id { get; set; }
 
-        public Name Name { get; private set; }
+        /// <summary>
+        /// Gets or sets the name of the product.
+        /// </summary>
+        public required Name Name { get; set; }
 
-        public string? Description { get; private set; }
+        /// <summary>
+        /// Gets or sets the description of the product.
+        /// </summary>
+        public string? Description { get; set; }
 
-        [Url]
-        public string? Image { get; private set; }
+        /// <summary>
+        /// Gets or sets the image URL of the product.
+        /// </summary>
+        public Url? Image { get; set; }
 
-        public Price Price { get; private set; }
+        /// <summary>
+        /// Gets or sets the price of the product.
+        /// </summary>
+        public required Price Price { get; set; }
 
-        public Amount Amount { get; private set; }
-        
-        public int CategoryId { get; private set; }
+        /// <summary>
+        /// Gets or sets the available amount of the product.
+        /// </summary>
+        public required Amount Amount { get; set; }
 
-        public Product(string name, int categoryId, decimal price, int amount, string? description = null, string? image = null)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new InvalidOperationException("Product Name is required.");
-            }
-
-            this.Name = new Name(name);
-            this.Price = new Price(price);
-            this.Amount = new Amount(amount);
-            this.CategoryId = categoryId;
-            this.Description = description;
-            this.Image = image;
-        }
-
-        private Product() { }
+        /// <summary>
+        /// Gets or sets the category id this product belongs to.
+        /// </summary>
+        public required int CategoryId { get; set; }
     }
 }

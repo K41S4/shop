@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Catalog.Core.Entities;
+using Catalog.Core.Entities.ValueObjects;
 using Catalog.Core.Services;
 using Catalog.Persistence.DBContext;
+using Catalog.Persistence.Entities;
 using Catalog.Persistence.MappingProfiles;
 using Catalog.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -9,14 +11,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Catalog.IntegrationTests
 {
+    /// <summary>
+    /// Tests for Product Service.
+    /// </summary>
     public class ProductServiceTests : IDisposable
     {
         private readonly CatalogDBContext dbContext;
         private readonly ProductService productService;
+        private bool disposed = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProductServiceTests"/> class.
+        /// </summary>
         public ProductServiceTests()
         {
-            var config = new MapperConfiguration(cfg =>
+            var config = new MapperConfiguration(
+                cfg =>
             {
                 cfg.AddProfile<ProductProfile>();
                 cfg.AddProfile<CategoryProfile>();
@@ -28,31 +38,71 @@ namespace Catalog.IntegrationTests
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            dbContext = new CatalogDBContext(dbOptions);
+            this.dbContext = new CatalogDBContext(dbOptions);
 
-            var productRepository = new ProductRepository(dbContext, mapper);
+            var productRepository = new ProductRepository(this.dbContext, mapper);
+            var categoryRepository = new CategoryRepository(this.dbContext, mapper);
 
-            productService = new ProductService(productRepository);
+            this.productService = new ProductService(productRepository, categoryRepository);
         }
 
+        /// <summary>
+        /// Tests that AddProduct adds correct product to database when category exists.
+        /// </summary>
+        /// <returns>Task.</returns>
         [Fact]
-        public async Task AddProduct_ShouldAddProductToDatabase()
+        public async Task AddProduct_CategoryExists_ShouldAddProductToDatabase()
         {
             // Arrange
-            var product = new Product("Test Product", 24, 10, 5);
+            var category = new CategoryEntity
+            {
+                Id = 1,
+                Name = "Test Category",
+            };
+            await this.dbContext.Categories.AddAsync(category);
+            await this.dbContext.SaveChangesAsync();
+
+            var product = new Product
+            {
+                Name = new Name { Value = "Test product" },
+                Amount = new Amount { Value = 1 },
+                CategoryId = 1,
+                Price = new Price { Value = 1.1m },
+            };
 
             // Act
-            await productService.AddProduct(product);
+            await this.productService.AddProduct(product);
 
             // Assert
-            var dbProduct = await dbContext.Products.FirstOrDefaultAsync();
+            var dbProduct = await this.dbContext.Products.FirstOrDefaultAsync();
             Assert.NotNull(dbProduct);
-            Assert.Equal("Test Product", dbProduct.Name);
+            Assert.Equal("Test product", dbProduct.Name);
         }
 
+        /// <summary>
+        /// Disposes the test resources.
+        /// </summary>
+        /// <param name="disposing">Whether disposing is in progress.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    this.dbContext.Dispose();
+                }
+
+                this.disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Disposes the test resources.
+        /// </summary>
         public void Dispose()
         {
-            dbContext.Dispose();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

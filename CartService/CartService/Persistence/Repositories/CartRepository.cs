@@ -1,44 +1,51 @@
 ﻿using CartApp.Models;
-using LiteDB;
+using LiteDB.Async;
 
 namespace CartApp.Persistence.Repositories
 {
+    /// <summary>
+    /// Repository implementation for cart data access using LiteDB.
+    /// </summary>
     public class CartRepository : ICartRepository
     {
-        private const string CartCollection = "carts";
-        private readonly string connectionString;
+        private readonly ILiteDatabaseAsync liteDb;
 
-        public CartRepository(string connectionString)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CartRepository"/> class.
+        /// </summary>
+        /// <param name="liteDb">The LiteDB database instance.</param>
+        public CartRepository(ILiteDatabaseAsync liteDb)
         {
-            this.connectionString = connectionString;
+            this.liteDb = liteDb;
         }
 
-        public void CreateCart(Cart cart)
+        /// <inheritdoc/>
+        public async Task CreateCart(Cart cart)
         {
-            using var context = new LiteDatabase(this.connectionString);
-            var carts = context.GetCollection<Cart>(CartCollection);
+            var carts = this.liteDb.GetCollection<Cart>();
 
-            if (carts.FindOne(x => x.Id == cart.Id) is not null)
+            var existingCart = await carts.FindByIdAsync(cart.Id);
+            if (existingCart is not null)
             {
                 throw new ArgumentException("Cart with such ID already exists");
             }
 
-            carts.Insert(cart);
+            await carts.InsertAsync(cart);
         }
 
-        public Cart GetCart(int cartId)
+        /// <inheritdoc/>
+        public async Task<Cart> GetCart(int cartId)
         {
-            using var context = new LiteDatabase(this.connectionString);
-            var carts = context.GetCollection<Cart>(CartCollection);
+            var carts = this.liteDb.GetCollection<Cart>();
 
-            return carts.FindOne(cart => cart.Id == cartId);
+            return await carts.Query().Where(cart => cart.Id == cartId).FirstOrDefaultAsync();
         }
 
-        public void SaveCart(Cart cart)
+        /// <inheritdoc/>
+        public async Task SaveCart(Cart cart)
         {
-            using var context = new LiteDatabase(this.connectionString);
-            var carts = context.GetCollection<Cart>(CartCollection);
-            carts.Update(cart);
+            var carts = this.liteDb.GetCollection<Cart>();
+            await carts.UpsertAsync(cart);
         }
     }
 }

@@ -1,16 +1,29 @@
-﻿namespace Catalog.Core.Entities.ValueObjects
+﻿using Catalog.Core.Exceptions;
+
+namespace Catalog.Core.Entities.ValueObjects
 {
+    /// <summary>
+    /// Represents an amount value object with validation.
+    /// </summary>
     public class Amount
     {
-        public int Value { get; }
+        private readonly int amountValue;
 
-        private Amount() {}
-
-        public Amount(int amount)
+        /// <summary>
+        /// Gets the amount value. Must not be negative.
+        /// </summary>
+        public required int Value
         {
-            if (amount < 0) throw new InvalidOperationException("Amount cannot be less than zero.");
+            get => this.amountValue;
+            init
+            {
+                if (value < 0)
+                {
+                    throw new NegativeAmountException();
+                }
 
-            this.Value = amount;
+                this.amountValue = value;
+            }
         }
     }
 }

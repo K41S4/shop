@@ -1,19 +1,29 @@
-﻿namespace Catalog.Core.Entities.ValueObjects
+﻿using Catalog.Core.Exceptions;
+
+namespace Catalog.Core.Entities.ValueObjects
 {
+    /// <summary>
+    /// Represents a price value object with validation.
+    /// </summary>
     public class Price
     {
-        public decimal Value { get; }
+        private readonly decimal priceValue;
 
-        private Price() {}
-
-        public Price(decimal amount)
+        /// <summary>
+        /// Gets the price value. Must not be negative.
+        /// </summary>
+        public required decimal Value
         {
-            if (amount < 0)
+            get => this.priceValue;
+            init
             {
-                throw new InvalidOperationException("Price cannot be negative");
-            }
+                if (value < 0)
+                {
+                    throw new NegativePriceException();
+                }
 
-            this.Value = amount;
+                this.priceValue = value;
+            }
         }
     }
 }

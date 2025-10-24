@@ -3,58 +3,65 @@ using CartApp.Persistence.Repositories;
 
 namespace CartApp.BusinessLogic.Services
 {
+    /// <summary>
+    /// Service for managing cart operations.
+    /// </summary>
     public class CartService(ICartRepository repository) : ICartService
     {
-        public void AddCart(Cart cart)
+        /// <inheritdoc/>
+        public async Task AddCart(Cart cart)
         {
-            repository.CreateCart(cart);
+            await repository.CreateCart(cart);
         }
 
-        public IEnumerable<CartItem> GetCartItems(int cartId)
+        /// <inheritdoc/>
+        public async Task<IEnumerable<CartItem>?> GetCartItems(int cartId)
         {
-            var cart = repository.GetCart(cartId);
+            var cart = await repository.GetCart(cartId);
 
             return cart.Items;
         }
 
-        public void AddItemToCart(CartItem item, int cartId)
+        /// <inheritdoc/>
+        public async Task AddItemToCart(CartItem item, int cartId)
         {
-            var cart = repository.GetCart(cartId);
+            var cart = await repository.GetCart(cartId);
 
-            var cartItem = cart.Items.FirstOrDefault(x => x.Id == item.Id);
+            var cartItem = cart.Items?.FirstOrDefault(x => x.Id == item.Id);
             if (cartItem is not null)
             {
-                cartItem.IncrementQuantity();
+                cartItem.Quantity += item.Quantity;
             }
             else
             {
-                cart.Items.Add(item);
+                cart.Items?.Add(item);
             }
 
-            repository.SaveCart(cart);
+            await repository.SaveCart(cart);
         }
 
-        public void RemoveItemFromCart(CartItem item, int cartId)
+        /// <inheritdoc/>
+        public async Task RemoveItemFromCart(CartItem item, int cartId)
         {
-            var cart = repository.GetCart(cartId);
+            var cart = await repository.GetCart(cartId);
 
-            var cartItem = cart.Items.FirstOrDefault(x => x.Id == item.Id);
+            var cartItem = cart.Items?.FirstOrDefault(x => x.Id == item.Id);
 
             if (cartItem is null)
             {
                 return;
             }
 
-            if (cartItem.Quantity > 1)
+            if (cartItem.Quantity - item.Quantity > 0)
             {
-                cartItem.DecrementQuantity();
+                cartItem.Quantity -= item.Quantity;
             }
             else
             {
-                cart.Items.Remove(cartItem);
+                cart.Items?.Remove(cartItem);
             }
 
-            repository.SaveCart(cart);
+            await repository.SaveCart(cart);
         }
     }
 }
