@@ -1,6 +1,7 @@
 using CartApp.BusinessLogic.Services;
 using CartApp.Models;
 using CartApp.Persistence.Repositories;
+using FluentAssertions;
 using LiteDB.Async;
 
 namespace CartApp.IntegrationTests
@@ -46,8 +47,7 @@ namespace CartApp.IntegrationTests
 
             // Assert
             var retrievedCart = await this.cartRepository.GetCart(1);
-            Assert.NotNull(retrievedCart);
-            Assert.Equal(1, retrievedCart.Id);
+            retrievedCart.Should().BeEquivalentTo(cart);
         }
 
         /// <summary>
@@ -85,10 +85,7 @@ namespace CartApp.IntegrationTests
             var items = await this.cartService.GetCartItems(1);
 
             // Assert
-            Assert.NotNull(items);
-            Assert.Equal(2, items.Count());
-            Assert.Contains(items, item => item is { Id: 1, Name: "Item 1" });
-            Assert.Contains(items, item => item is { Id: 2, Name: "Item 2" });
+            items.Should().BeEquivalentTo(cart.Items);
         }
 
         /// <summary>
@@ -122,15 +119,27 @@ namespace CartApp.IntegrationTests
                 Quantity = 1,
             };
 
+            var expectedCart = new Cart
+            {
+                Id = 1,
+                Items = new List<CartItem>
+                {
+                    new ()
+                    {
+                        Id = 1,
+                        Name = "Existing Item",
+                        Price = 10.99m,
+                        Quantity = 3,
+                    },
+                },
+            };
+
             // Act
             await this.cartService.AddItemToCart(itemToAdd, 1);
 
             // Assert
             var retrievedCart = await this.cartRepository.GetCart(1);
-            Assert.NotNull(retrievedCart);
-            Assert.Single(retrievedCart.Items!);
-            var updatedItem = retrievedCart.Items!.First();
-            Assert.Equal(3, updatedItem.Quantity);
+            retrievedCart.Should().BeEquivalentTo(expectedCart);
         }
 
         /// <summary>

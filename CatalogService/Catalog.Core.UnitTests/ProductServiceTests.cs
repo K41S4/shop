@@ -3,6 +3,7 @@ using Catalog.Core.Entities.ValueObjects;
 using Catalog.Core.Exceptions;
 using Catalog.Core.Repositories;
 using Catalog.Core.Services;
+using FluentAssertions;
 using Moq;
 
 namespace Catalog.Core.UnitTests
@@ -47,8 +48,8 @@ namespace Catalog.Core.UnitTests
             var result = await this.productService.GetProducts();
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Single(result);
+            result.Should().ContainSingle();
+            result.First().Should().BeEquivalentTo(product);
         }
 
         /// <summary>

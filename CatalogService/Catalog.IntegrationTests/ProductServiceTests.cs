@@ -6,6 +6,7 @@ using Catalog.Persistence.DBContext;
 using Catalog.Persistence.Entities;
 using Catalog.Persistence.MappingProfiles;
 using Catalog.Persistence.Repositories;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -75,8 +76,13 @@ namespace Catalog.IntegrationTests
 
             // Assert
             var dbProduct = await this.dbContext.Products.FirstOrDefaultAsync();
-            Assert.NotNull(dbProduct);
-            Assert.Equal("Test product", dbProduct.Name);
+            dbProduct.Should().BeEquivalentTo(new
+            {
+                Name = product.Name.Value,
+                Amount = product.Amount.Value,
+                Price = product.Price.Value,
+                product.CategoryId,
+            });
         }
 
         /// <summary>
