@@ -50,9 +50,9 @@ namespace Catalog.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task RemoveCategory(int id)
+        public async Task<bool> RemoveCategory(int id)
         {
-            await this.repository.RemoveCategory(id);
+            return await this.repository.RemoveCategory(id);
         }
 
         /// <inheritdoc/>

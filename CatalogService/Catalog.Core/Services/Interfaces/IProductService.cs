@@ -31,8 +31,8 @@ namespace Catalog.Core.Services.Interfaces
         /// Removes a product by its id.
         /// </summary>
         /// <param name="id">The product id.</param>
-        /// <returns>Task.</returns>
-        public Task RemoveProduct(int id);
+        /// <returns>Value indicating whether category was removed or not.</returns>
+        public Task<bool> RemoveProduct(int id);
 
         /// <summary>
         /// Updates an existing product.

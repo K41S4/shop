@@ -31,8 +31,8 @@ namespace Catalog.Core.Services.Interfaces
         /// Removes a category by its identifier.
         /// </summary>
         /// <param name="id">The category identifier.</param>
-        /// <returns>Task.</returns>
-        public Task RemoveCategory(int id);
+        /// <returns>Value indicating whether category was removed or not.</returns>
+        public Task<bool> RemoveCategory(int id);
 
         /// <summary>
         /// Updates an existing category.

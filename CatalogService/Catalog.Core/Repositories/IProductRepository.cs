@@ -31,8 +31,8 @@ namespace Catalog.Core.Repositories
         /// Removes a product by its id.
         /// </summary>
         /// <param name="productId">The product id.</param>
-        /// <returns>Task.</returns>
-        public Task RemoveProduct(int productId);
+        /// <returns>Value indicating whether category was removed or not.</returns>
+        public Task<bool> RemoveProduct(int productId);
 
         /// <summary>
         /// Updates an existing product.

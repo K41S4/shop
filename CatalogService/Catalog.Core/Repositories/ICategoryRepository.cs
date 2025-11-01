@@ -31,8 +31,8 @@ namespace Catalog.Core.Repositories
         /// Removes a category by its id.
         /// </summary>
         /// <param name="categoryId">The category id.</param>
-        /// <returns>Task.</returns>
-        public Task RemoveCategory(int categoryId);
+        /// <returns>Value indicating whether category was removed or not.</returns>
+        public Task<bool> RemoveCategory(int categoryId);
 
         /// <summary>
         /// Updates an existing category.

@@ -50,9 +50,9 @@ namespace Catalog.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task RemoveProduct(int id)
+        public async Task<bool> RemoveProduct(int id)
         {
-            await this.productRepo.RemoveProduct(id);
+            return await this.productRepo.RemoveProduct(id);
         }
 
         /// <inheritdoc/>

@@ -49,16 +49,17 @@ namespace Catalog.Persistence.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task RemoveProduct(int productId)
+        public async Task<bool> RemoveProduct(int productId)
         {
             var productEntity = await this.dbContext.Products.FindAsync(productId);
             if (productEntity is null)
             {
-                return;
+                return false;
             }
 
             this.dbContext.Products.Remove(productEntity);
             await this.dbContext.SaveChangesAsync();
+            return true;
         }
 
         /// <inheritdoc/>

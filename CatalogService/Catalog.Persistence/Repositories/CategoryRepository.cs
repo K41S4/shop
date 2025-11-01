@@ -49,16 +49,17 @@ namespace Catalog.Persistence.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task RemoveCategory(int categoryId)
+        public async Task<bool> RemoveCategory(int categoryId)
         {
             var categoryEntity = await this.dbContext.Categories.FindAsync(categoryId);
             if (categoryEntity is null)
             {
-                return;
+                return false;
             }
 
             this.dbContext.Categories.Remove(categoryEntity);
             await this.dbContext.SaveChangesAsync();
+            return true;
         }
 
         /// <inheritdoc/>
