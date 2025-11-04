@@ -32,12 +32,12 @@ namespace CartApp.UnitTests.Persistence.Repositories
             // Arrange
             var cart = new Cart
             {
-                Id = 1,
+                Id = "1",
             };
 
             var cartToCreate = new Cart
             {
-                Id = 1,
+                Id = "1",
             };
 
             var collectionMock = new Mock<ILiteCollectionAsync<Cart>>();

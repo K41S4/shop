@@ -19,6 +19,11 @@ namespace Catalog.WebAPI.Middlewares
             {
                 await next(context);
             }
+            catch (NotFoundException ex)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                await context.Response.WriteAsJsonAsync(new { error = ex.Message });
+            }
             catch (Exception ex)
             {
                 var domainEx = ex as DomainException ?? ex.InnerException as DomainException;

@@ -10,6 +10,7 @@ namespace Catalog.WebAPI.Controllers;
 /// Categories controller.
 /// </summary>
 /// <param name="categoryService">Category service.</param>
+/// <param name="mapper">AutoMapper instance.</param>
 [ApiController]
 [Route("api/[controller]")]
 public class CategoriesController(ICategoryService categoryService, IMapper mapper) : ControllerBase
@@ -58,7 +59,7 @@ public class CategoriesController(ICategoryService categoryService, IMapper mapp
 
         if (category is null)
         {
-            return this.NotFound();
+            return this.NotFound($"Category with {categoryId} id was not found.");
         }
 
         var categoryDto = mapper.Map<ResponseCategoryDto>(category);
@@ -86,11 +87,7 @@ public class CategoriesController(ICategoryService categoryService, IMapper mapp
     [HttpDelete("{categoryId}")]
     public async Task<IActionResult> RemoveCategory([FromRoute] int categoryId)
     {
-        var removed = await categoryService.RemoveCategory(categoryId);
-        if (!removed)
-        {
-            return this.NotFound();
-        }
+        await categoryService.RemoveCategory(categoryId);
 
         return this.NoContent();
     }

@@ -4,7 +4,7 @@ using CartApp.Persistence.Repositories;
 using FluentAssertions;
 using LiteDB.Async;
 
-namespace CartApp.IntegrationTests
+namespace CartApp.IntegrationTests.Services
 {
     /// <summary>
     /// Integration tests for the CartService.
@@ -29,28 +29,6 @@ namespace CartApp.IntegrationTests
         }
 
         /// <summary>
-        /// Tests that AddCart succeeds with a valid cart.
-        /// </summary>
-        /// <returns>Task.</returns>
-        [Fact]
-        public async Task AddCart_WithValidCart_ShouldSucceed()
-        {
-            // Arrange
-            var cart = new Cart
-            {
-                Id = 1,
-                Items = new List<CartItem>(),
-            };
-
-            // Act
-            await this.cartService.AddCart(cart);
-
-            // Assert
-            var retrievedCart = await this.cartRepository.GetCart(1);
-            retrievedCart.Should().BeEquivalentTo(cart);
-        }
-
-        /// <summary>
         /// Tests that GetCartItems returns items for an existing cart.
         /// </summary>
         /// <returns>Task.</returns>
@@ -58,9 +36,10 @@ namespace CartApp.IntegrationTests
         public async Task GetCartItems_WithExistingCart_ShouldReturnItems()
         {
             // Arrange
+            const string cartId = "1";
             var cart = new Cart
             {
-                Id = 1,
+                Id = cartId,
                 Items = new List<CartItem>(),
             };
             var item1 = new CartItem
@@ -82,7 +61,7 @@ namespace CartApp.IntegrationTests
             await this.cartRepository.CreateCart(cart);
 
             // Act
-            var items = await this.cartService.GetCartItems(1);
+            var items = await this.cartService.GetCartItems(cartId);
 
             // Assert
             items.Should().BeEquivalentTo(cart.Items);
@@ -96,9 +75,10 @@ namespace CartApp.IntegrationTests
         public async Task AddItemToCart_WithExistingItem_ShouldIncrementQuantity()
         {
             // Arrange
+            const string cartId = "1";
             var cart = new Cart
             {
-                Id = 1,
+                Id = cartId,
                 Items = new List<CartItem>(),
             };
             var existingItem = new CartItem
@@ -121,7 +101,7 @@ namespace CartApp.IntegrationTests
 
             var expectedCart = new Cart
             {
-                Id = 1,
+                Id = cartId,
                 Items = new List<CartItem>
                 {
                     new ()
@@ -135,10 +115,10 @@ namespace CartApp.IntegrationTests
             };
 
             // Act
-            await this.cartService.AddItemToCart(itemToAdd, 1);
+            await this.cartService.AddItemToCart(cartId, itemToAdd);
 
             // Assert
-            var retrievedCart = await this.cartRepository.GetCart(1);
+            var retrievedCart = await this.cartRepository.GetCart(cartId);
             retrievedCart.Should().BeEquivalentTo(expectedCart);
         }
 

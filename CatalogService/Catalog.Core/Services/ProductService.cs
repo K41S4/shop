@@ -31,9 +31,15 @@ namespace Catalog.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<Product>> GetProducts()
+        public async Task<IEnumerable<Product>> GetProducts(int categoryId, int page, int limit)
         {
-            return await this.productRepo.GetProducts();
+            var category = await this.categoryRepo.GetCategory(categoryId);
+            if (category is null)
+            {
+                throw new NotFoundException($"Category with {categoryId} id was not found.");
+            }
+
+            return await this.productRepo.GetProducts(categoryId, page, limit);
         }
 
         /// <inheritdoc/>
@@ -50,14 +56,26 @@ namespace Catalog.Core.Services
         }
 
         /// <inheritdoc/>
-        public async Task<bool> RemoveProduct(int id)
+        public async Task RemoveProduct(int id)
         {
-            return await this.productRepo.RemoveProduct(id);
+            var product = await this.productRepo.GetProduct(id);
+            if (product is null)
+            {
+                throw new NotFoundException($"Product with {id} id was not found.");
+            }
+
+            await this.productRepo.RemoveProduct(id);
         }
 
         /// <inheritdoc/>
         public async Task UpdateProduct(Product product)
         {
+            var productFromDB = await this.productRepo.GetProduct(product.Id);
+            if (productFromDB is null)
+            {
+                throw new NotFoundException($"Product with {product.Id} id was not found.");
+            }
+
             var category = await this.categoryRepo.GetCategory(product.CategoryId);
 
             if (category is null)

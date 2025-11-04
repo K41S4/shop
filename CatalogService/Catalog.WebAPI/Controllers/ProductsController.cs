@@ -10,6 +10,7 @@ namespace Catalog.WebAPI.Controllers;
 /// Products controller.
 /// </summary>
 /// <param name="productService">Product service.</param>
+/// <param name="mapper">AutoMapper instance.</param>
 [ApiController]
 [Route("api/[controller]")]
 public class ProductsController(IProductService productService, IMapper mapper) : ControllerBase
@@ -56,18 +57,31 @@ public class ProductsController(IProductService productService, IMapper mapper) 
     {
         var product = await productService.GetProduct(productId);
 
+        if (product is null)
+        {
+            return this.NotFound($"Product with {productId} id was not found.");
+        }
+
         var productDto = mapper.Map<ResponseProductDto>(product);
         return this.Ok(productDto);
     }
 
     /// <summary>
-    /// Endpoint for getting all products.
+    /// Endpoint for getting all products with filtering.
     /// </summary>
+    /// <param name="categoryId">The category id to filter by.</param>
+    /// <param name="page">The requested page.</param>
+    /// <param name="limit">The amount of products per page.</param>
     /// <returns>The response.</returns>
     [HttpGet]
-    public async Task<IActionResult> GetProducts()
+    public async Task<IActionResult> GetProducts([FromQuery] int categoryId, [FromQuery] int page, [FromQuery] int limit)
     {
-        var products = await productService.GetProducts();
+        if (page < 0 || limit < 0)
+        {
+            return this.BadRequest("Page and Limit should be positive numbers greater than 0.");
+        }
+
+        var products = await productService.GetProducts(categoryId, page, limit);
 
         var productsDto = mapper.Map<IEnumerable<ResponseProductDto>>(products);
         return this.Ok(productsDto);
@@ -81,11 +95,7 @@ public class ProductsController(IProductService productService, IMapper mapper) 
     [HttpDelete("{productId}")]
     public async Task<IActionResult> RemoveProduct([FromRoute] int productId)
     {
-        var removed = await productService.RemoveProduct(productId);
-        if (!removed)
-        {
-            return this.NotFound();
-        }
+        await productService.RemoveProduct(productId);
 
         return this.NoContent();
     }

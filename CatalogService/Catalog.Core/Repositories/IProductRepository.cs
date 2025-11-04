@@ -15,10 +15,13 @@ namespace Catalog.Core.Repositories
         public Task<Product?> GetProduct(int id);
 
         /// <summary>
-        /// Gets all products.
+        /// Gets products with filtering.
         /// </summary>
-        /// <returns>A collection of all products.</returns>
-        public Task<IEnumerable<Product>> GetProducts();
+        /// <param name="categoryId">The category id to filter by.</param>
+        /// <param name="page">The requested page.</param>
+        /// <param name="limit">The amount of products per page.</param>
+        /// <returns>A collection of products.</returns>
+        public Task<IEnumerable<Product>> GetProducts(int categoryId, int page, int limit);
 
         /// <summary>
         /// Adds a new product.
@@ -31,8 +34,8 @@ namespace Catalog.Core.Repositories
         /// Removes a product by its id.
         /// </summary>
         /// <param name="productId">The product id.</param>
-        /// <returns>Value indicating whether category was removed or not.</returns>
-        public Task<bool> RemoveProduct(int productId);
+        /// <returns>Task.</returns>
+        public Task RemoveProduct(int productId);
 
         /// <summary>
         /// Updates an existing product.

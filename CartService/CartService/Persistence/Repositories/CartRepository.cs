@@ -34,7 +34,7 @@ namespace CartApp.Persistence.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<Cart> GetCart(int cartId)
+        public async Task<Cart?> GetCart(string cartId)
         {
             var carts = this.liteDb.GetCollection<Cart>();
 

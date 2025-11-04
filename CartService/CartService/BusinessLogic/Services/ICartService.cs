@@ -8,33 +8,33 @@ namespace CartApp.BusinessLogic.Services
     public interface ICartService
     {
         /// <summary>
-        /// Adds a new cart.
+        /// Gets a cart.
         /// </summary>
-        /// <param name="cart">The cart to add.</param>
-        /// <returns>Task.</returns>
-        public Task AddCart(Cart cart);
+        /// <param name="cartId">The cart id.</param>
+        /// <returns>The found cart.</returns>
+        public Task<Cart?> GetCart(string cartId);
 
         /// <summary>
         /// Gets all items in a cart.
         /// </summary>
         /// <param name="cartId">The cart id.</param>
         /// <returns>A collection of cart items if found, otherwise null.</returns>
-        public Task<IEnumerable<CartItem>?> GetCartItems(int cartId);
+        public Task<List<CartItem>> GetCartItems(string cartId);
 
         /// <summary>
         /// Adds an item to a cart.
         /// </summary>
-        /// <param name="item">The item to add.</param>
         /// <param name="cartId">The cart id.</param>
+        /// <param name="item">The item to add.</param>
         /// <returns>Task.</returns>
-        public Task AddItemToCart(CartItem item, int cartId);
+        public Task AddItemToCart(string cartId, CartItem item);
 
         /// <summary>
         /// Removes an item from a cart.
         /// </summary>
-        /// <param name="item">The item to remove.</param>
         /// <param name="cartId">The cart id.</param>
+        /// <param name="itemId">The item id to remove.</param>
         /// <returns>Task.</returns>
-        public Task RemoveItemFromCart(CartItem item, int cartId);
+        public Task RemoveItemFromCart(string cartId, int itemId);
     }
 }

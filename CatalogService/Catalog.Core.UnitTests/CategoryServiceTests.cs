@@ -55,18 +55,18 @@ namespace Catalog.Core.UnitTests
         public async Task UpdateCategory_InvalidParentCategory_ShouldThrow()
         {
             // Arrange
-            var product = new Category
+            var category = new Category
             {
                 Id = 1,
                 ParentCategoryId = 123,
                 Name = new Name { Value = "Test category" },
             };
 
-            this.mockCategoryRepository.Setup(x => x.GetCategory(It.IsAny<int>())).ReturnsAsync((Category?)null);
+            this.mockCategoryRepository.Setup(x => x.GetCategory(category.Id)).ReturnsAsync(category);
 
             // Act
             // Assert
-            await Assert.ThrowsAsync<InvalidCategoryException>(() => this.categoryService.UpdateCategory(product));
+            await Assert.ThrowsAsync<InvalidCategoryException>(() => this.categoryService.UpdateCategory(category));
             this.mockCategoryRepository.Verify(x => x.UpdateCategory(It.IsAny<Category>()), Times.Never);
         }
     }
