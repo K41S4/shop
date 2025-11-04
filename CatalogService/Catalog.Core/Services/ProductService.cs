@@ -36,7 +36,7 @@ namespace Catalog.Core.Services
             var category = await this.categoryRepo.GetCategory(categoryId);
             if (category is null)
             {
-                throw new NotFoundException($"Category with {categoryId} id was not found.");
+                throw new InvalidCategoryException();
             }
 
             return await this.productRepo.GetProducts(categoryId, page, limit);

@@ -5,6 +5,7 @@ using AutoMapper;
 using CartApp.BusinessLogic.Services;
 using CartApp.Persistence.Repositories;
 using CartApp.WebApi.Controllers.v1;
+using CartApp.WebApi.Filters;
 using CartApp.WebApi.MappingProfiles;
 using LiteDB.Async;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -36,7 +37,10 @@ public class Startup
     /// <param name="services">Service collection.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers()
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<ExceptionFilter>();
+        })
             .AddApplicationPart(typeof(CartsV1Controller).Assembly);
 
         services.AddApiVersioning(options =>

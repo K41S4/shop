@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using CartApp.IntegrationTests.WebApi.Common;
 using CartApp.WebApi.Dtos;
 using FluentAssertions;
+using Shouldly;
 
 namespace CartApp.IntegrationTests.WebApi.Controllers.v1
 {
@@ -46,12 +47,12 @@ namespace CartApp.IntegrationTests.WebApi.Controllers.v1
             var response = await this.HttpClient.GetAsync($"api/v1/carts/{cartId}");
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
             var cartDto = await response.Content.ReadFromJsonAsync<ResponseCart>();
-            cartDto.Should().NotBeNull();
-            cartDto!.Id.Should().Be(cartId);
-            cartDto.Items.Should().NotBeNull();
-            cartDto.Items!.Count.Should().Be(2);
+            cartDto.ShouldNotBeNull();
+            cartDto!.Id.ShouldBeEquivalentTo(cartId);
+            cartDto.Items.ShouldNotBeNull();
+            cartDto.Items!.Count.ShouldBeEquivalentTo(2);
         }
 
         /// <summary>
@@ -75,17 +76,14 @@ namespace CartApp.IntegrationTests.WebApi.Controllers.v1
             var response = await this.HttpClient.PostAsJsonAsync($"api/v1/carts/{cartId}/items", cartItemDto);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
 
             var getResponse = await this.HttpClient.GetAsync($"api/v1/carts/{cartId}");
-            getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            getResponse.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
             var cartDto = await getResponse.Content.ReadFromJsonAsync<ResponseCart>();
-            cartDto.Should().NotBeNull();
-            cartDto!.Items.Should().Contain(item =>
-                item.Id == cartItemDto.Id &&
-                item.Name == cartItemDto.Name &&
-                item.Price == cartItemDto.Price &&
-                item.Quantity == cartItemDto.Quantity);
+            cartDto.ShouldNotBeNull();
+            cartDto!.Items.Should().BeEquivalentTo(new List<AddCartItem> { cartItemDto }, options => options
+                .ComparingByMembers<AddCartItem>());
         }
     }
 }

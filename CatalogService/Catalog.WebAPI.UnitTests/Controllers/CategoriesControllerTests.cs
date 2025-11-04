@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Shouldly;
 
 namespace Catalog.WebAPI.UnitTests.Controllers
 {
@@ -90,10 +91,12 @@ namespace Catalog.WebAPI.UnitTests.Controllers
             // Assert
             result.Should().BeOfType<OkObjectResult>();
             var okResult = result as OkObjectResult;
-            okResult?.Value.Should().BeOfType<ResponseCategoryDto>();
-            var categoryDto = okResult?.Value as ResponseCategoryDto;
-            categoryDto?.Id.Should().Be(categoryId);
-            categoryDto?.Name.Should().Be("Test Category");
+            okResult?.Value.ShouldBeEquivalentTo(new ResponseCategoryDto
+            {
+                Id = categoryId,
+                Name = "Test Category",
+                Image = "https://example.com/image.jpg",
+            });
         }
     }
 }

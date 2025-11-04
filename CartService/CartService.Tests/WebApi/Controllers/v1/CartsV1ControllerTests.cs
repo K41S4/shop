@@ -101,7 +101,7 @@ namespace CartApp.UnitTests.WebApi.Controllers.v1
         }
 
         /// <summary>
-        /// Tests that DeleteItemFromCart returns NotFound when NotFoundException is thrown.
+        /// Tests that DeleteItemFromCart pushes NotFoundException further when it is thrown for cart.
         /// </summary>
         /// <returns>Task.</returns>
         [Fact]
@@ -117,16 +117,15 @@ namespace CartApp.UnitTests.WebApi.Controllers.v1
             var controller = new CartsV1Controller(this.mockService.Object, this.mapper);
 
             // Act
-            var result = await controller.DeleteItemFromCart(cartId, itemId);
-
             // Assert
-            result.ShouldBeOfType<NotFoundObjectResult>();
-            var notFoundResult = result as NotFoundObjectResult;
-            notFoundResult?.Value.ShouldNotBeNull();
+            var exception =
+                await Assert.ThrowsAsync<NotFoundException>(async () => await controller.DeleteItemFromCart(cartId, itemId));
+            exception.Message.ShouldBe("Cart with non-existent-id ID was not found.");
+
         }
 
         /// <summary>
-        /// Tests that DeleteItemFromCart returns NotFound when item is not found.
+        /// Tests that DeleteItemFromCart pushes NotFoundException further when it is thrown for cart item.
         /// </summary>
         /// <returns>Task.</returns>
         [Fact]
@@ -142,10 +141,10 @@ namespace CartApp.UnitTests.WebApi.Controllers.v1
             var controller = new CartsV1Controller(this.mockService.Object, this.mapper);
 
             // Act
-            var result = await controller.DeleteItemFromCart(cartId, itemId);
-
             // Assert
-            result.ShouldBeOfType<NotFoundObjectResult>();
+            var exception =
+                await Assert.ThrowsAsync<NotFoundException>(async () => await controller.DeleteItemFromCart(cartId, itemId));
+            exception.Message.ShouldBe("Cart item with 999 ID was not found.");
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using Catalog.WebAPI.DTOs.Product;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Catalog.Persistence.Entities;
+using Shouldly;
 
 namespace Catalog.IntegrationTests.WebApi.Controllers
 {
@@ -40,9 +41,9 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var product = await this.DbContext.Products.FirstOrDefaultAsync(p => p.Name == "Test Product");
-            product.Should().NotBeNull();
-            product!.Name.Should().Be("Test Product");
-            product.Price.Should().Be(99.99m);
+            product.ShouldNotBeNull();
+            product!.Name.ShouldBe("Test Product");
+            product.Price.ShouldBe(99.99m);
         }
 
         /// <summary>
@@ -62,9 +63,9 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var productDto = await response.Content.ReadFromJsonAsync<ResponseProductDto>();
-            productDto.Should().NotBeNull();
-            productDto!.Id.Should().Be(productId);
-            productDto.Name.Should().Be("Test Product");
+            productDto.ShouldNotBeNull();
+            productDto!.Id.ShouldBe(productId);
+            productDto.Name.ShouldBe("Test Product");
         }
 
         /// <summary>

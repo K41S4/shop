@@ -1,4 +1,4 @@
-﻿namespace Catalog.Core.Exceptions
+﻿namespace CartApp.BusinessLogic.Exceptions
 {
     /// <summary>
     /// Domain exception.

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Catalog.Core.Entities;
 using Catalog.Core.Services.Interfaces;
+using Catalog.WebAPI.DTOs.Category;
 using Catalog.WebAPI.DTOs.Product;
 using Microsoft.AspNetCore.Mvc;
 
@@ -69,19 +70,12 @@ public class ProductsController(IProductService productService, IMapper mapper) 
     /// <summary>
     /// Endpoint for getting all products with filtering.
     /// </summary>
-    /// <param name="categoryId">The category id to filter by.</param>
-    /// <param name="page">The requested page.</param>
-    /// <param name="limit">The amount of products per page.</param>
+    /// <param name="parameters">Parameters to filter products by.</param>
     /// <returns>The response.</returns>
     [HttpGet]
-    public async Task<IActionResult> GetProducts([FromQuery] int categoryId, [FromQuery] int page, [FromQuery] int limit)
+    public async Task<IActionResult> GetProducts([FromQuery] GetProductsQuery parameters)
     {
-        if (page < 0 || limit < 0)
-        {
-            return this.BadRequest("Page and Limit should be positive numbers greater than 0.");
-        }
-
-        var products = await productService.GetProducts(categoryId, page, limit);
+        var products = await productService.GetProducts(parameters.CategoryId, parameters.Page, parameters.Limit);
 
         var productsDto = mapper.Map<IEnumerable<ResponseProductDto>>(products);
         return this.Ok(productsDto);

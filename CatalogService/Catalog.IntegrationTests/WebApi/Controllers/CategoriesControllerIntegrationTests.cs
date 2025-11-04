@@ -5,6 +5,7 @@ using Catalog.WebAPI.DTOs.Category;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Catalog.Persistence.Entities;
+using Shouldly;
 
 namespace Catalog.IntegrationTests.WebApi.Controllers
 {
@@ -34,8 +35,8 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.Created);
 
             var category = await this.DbContext.Categories.FirstOrDefaultAsync(c => c.Name == "Test");
-            category.Should().NotBeNull();
-            category!.Name.Should().Be("Test");
+            category.ShouldNotBeNull();
+            category!.Name.ShouldBe("Test");
         }
 
         /// <summary>
@@ -54,9 +55,9 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var categoryDto = await response.Content.ReadFromJsonAsync<ResponseCategoryDto>();
-            categoryDto.Should().NotBeNull();
-            categoryDto!.Id.Should().Be(categoryId);
-            categoryDto.Name.Should().Be("Test Category");
+            categoryDto.ShouldNotBeNull();
+            categoryDto!.Id.ShouldBe(categoryId);
+            categoryDto.Name.ShouldBe("Test Category");
         }
 
         /// <summary>

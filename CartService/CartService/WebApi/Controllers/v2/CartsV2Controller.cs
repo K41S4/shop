@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using AutoMapper;
-using CartApp.BusinessLogic.Exceptions;
 using CartApp.BusinessLogic.Services;
 using CartApp.Models;
 using CartApp.WebApi.Dtos;
@@ -26,15 +25,7 @@ public class CartsV2Controller(ICartService service, IMapper mapper) : Controlle
     [HttpGet("{cartId}")]
     public async Task<IActionResult> GetCartInfo([FromRoute] string cartId)
     {
-        List<CartItem> cartItems;
-        try
-        {
-            cartItems = await service.GetCartItems(cartId);
-        }
-        catch (NotFoundException ex)
-        {
-            return this.NotFound(new { ex.Message });
-        }
+        var cartItems = await service.GetCartItems(cartId);
 
         var cartItemsDro = mapper.Map<List<ResponseCartItem>>(cartItems);
 
@@ -64,14 +55,7 @@ public class CartsV2Controller(ICartService service, IMapper mapper) : Controlle
     [HttpDelete("{cartId}/items/{itemId}")]
     public async Task<IActionResult> DeleteItemFromCart([FromRoute] string cartId, [FromRoute] int itemId)
     {
-        try
-        {
-            await service.RemoveItemFromCart(cartId, itemId);
-        }
-        catch (NotFoundException ex)
-        {
-            return this.NotFound(new { ex.Message });
-        }
+        await service.RemoveItemFromCart(cartId, itemId);
 
         return this.Ok();
     }
