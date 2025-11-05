@@ -1,14 +1,14 @@
 ﻿using System.Reflection;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using AutoMapper;
 using CartApp.BusinessLogic.Services;
 using CartApp.Persistence.Repositories;
 using CartApp.WebApi.Controllers.v1;
 using CartApp.WebApi.Filters;
 using CartApp.WebApi.MappingProfiles;
 using LiteDB.Async;
-using Microsoft.Extensions.Logging.Abstractions;
+using Mapster;
+using MapsterMapper;
 
 namespace CartApp;
 
@@ -65,14 +65,11 @@ public class Startup
         services.AddScoped<ICartRepository, CartRepository>();
         this.ConfigureDbContext(services);
 
-        var config = new MapperConfiguration(
-            c =>
-            {
-                c.AddProfile<CartItemMappingProfile>();
-                c.AddProfile<CartMappingProfile>();
-            }, new NullLoggerFactory());
+        var config = new TypeAdapterConfig();
+        config.Scan(typeof(CartItemMappingConfig).Assembly);
 
-        services.AddSingleton<IMapper>(s => config.CreateMapper());
+        services.AddSingleton(config);
+        services.AddScoped<IMapper, ServiceMapper>();
     }
 
     /// <summary>

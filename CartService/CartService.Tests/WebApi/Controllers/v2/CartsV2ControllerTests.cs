@@ -1,12 +1,12 @@
-using AutoMapper;
 using CartApp.BusinessLogic.Exceptions;
 using CartApp.BusinessLogic.Services;
 using CartApp.Models;
 using CartApp.WebApi.Controllers.v2;
 using CartApp.WebApi.Dtos;
 using CartApp.WebApi.MappingProfiles;
+using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Shouldly;
 
@@ -25,14 +25,9 @@ namespace CartApp.UnitTests.WebApi.Controllers.v2
         /// </summary>
         public CartsV2ControllerTests()
         {
-            var config = new MapperConfiguration(
-                cfg =>
-                {
-                    cfg.AddProfile<CartItemMappingProfile>();
-                    cfg.AddProfile<CartMappingProfile>();
-                },
-                new NullLoggerFactory());
-            this.mapper = config.CreateMapper();
+            var config = new TypeAdapterConfig();
+            config.Scan(typeof(CartItemMappingConfig).Assembly);
+            this.mapper = new Mapper(config);
 
             this.mockService = new Mock<ICartService>();
         }
