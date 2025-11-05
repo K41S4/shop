@@ -91,9 +91,9 @@ namespace Catalog.WebAPI.UnitTests.Controllers
             // Assert
             result.ShouldBeEquivalentTo(new OkObjectResult(new ResponseCategoryDto
             {
-                Id = categoryId,
-                Name = "Test Category",
-                Image = "https://example.com/image.jpg",
+                Id = category.Id,
+                Name = category.Name.Value,
+                Image = category.Image.Value,
             }));
         }
     }

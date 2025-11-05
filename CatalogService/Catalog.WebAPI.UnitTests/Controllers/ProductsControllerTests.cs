@@ -97,12 +97,12 @@ namespace Catalog.WebAPI.UnitTests.Controllers
             // Assert
             result.ShouldBeEquivalentTo(new OkObjectResult(new ResponseProductDto
             {
-                Id = productId,
-                Name = "Test Product",
-                Description = "Test Description",
-                Price = 99.99m,
-                Amount = 10,
-                CategoryId = 1,
+                Id = product.Id,
+                Name = product.Name.Value,
+                Description = product.Description,
+                Price = product.Price.Value,
+                Amount = product.Amount.Value,
+                CategoryId = product.CategoryId,
             }));
         }
     }
