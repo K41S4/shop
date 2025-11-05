@@ -89,14 +89,12 @@ namespace Catalog.WebAPI.UnitTests.Controllers
             var result = await controller.GetCategory(categoryId);
 
             // Assert
-            result.Should().BeOfType<OkObjectResult>();
-            var okResult = result as OkObjectResult;
-            okResult?.Value.ShouldBeEquivalentTo(new ResponseCategoryDto
+            result.ShouldBeEquivalentTo(new OkObjectResult(new ResponseCategoryDto
             {
                 Id = categoryId,
                 Name = "Test Category",
                 Image = "https://example.com/image.jpg",
-            });
+            }));
         }
     }
 }

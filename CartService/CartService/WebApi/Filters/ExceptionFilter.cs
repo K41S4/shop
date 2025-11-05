@@ -15,39 +15,43 @@ namespace CartApp.WebApi.Filters
         /// <param name="context">Context.</param>
         public void OnException(ExceptionContext context)
         {
-            if (context.Exception is NotFoundException notFoundException)
+            switch (context.Exception)
             {
-                context.Result = new NotFoundObjectResult(new { error = notFoundException.Message });
-                context.ExceptionHandled = true;
-            }
-            else if (FindDomainException(context.Exception) is DomainException domainException)
-            {
-                context.Result = new BadRequestObjectResult(new { error = domainException.Message });
-                context.ExceptionHandled = true;
-            }
-            else
-            {
-                context.Result = new ObjectResult(new { error = "Internal server error" })
-                {
-                    StatusCode = 500,
-                };
-                context.ExceptionHandled = true;
+                case NotFoundException notFoundException:
+                    context.Result = new NotFoundObjectResult(new { error = notFoundException.Message });
+                    context.ExceptionHandled = true;
+                    break;
+
+                default:
+                    if (FindDomainException(context.Exception) is DomainException domainException)
+                    {
+                        context.Result = new BadRequestObjectResult(new { error = domainException.Message });
+                        context.ExceptionHandled = true;
+                    }
+                    else
+                    {
+                        context.Result = new ObjectResult(new { error = "Internal server error" })
+                        {
+                            StatusCode = 500,
+                        };
+                        context.ExceptionHandled = true;
+                    }
+
+                    break;
             }
         }
 
         private static DomainException? FindDomainException(Exception? ex)
         {
-            while (ex != null)
+            switch (ex)
             {
-                if (ex is DomainException domainEx)
-                {
+                case null:
+                    return null;
+                case DomainException domainEx:
                     return domainEx;
-                }
-
-                ex = ex.InnerException;
+                default:
+                    return FindDomainException(ex.InnerException);
             }
-
-            return null;
         }
     }
 }

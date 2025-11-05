@@ -27,7 +27,7 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
 
             var createDto = new CreateProductDto
             {
-                Name = "Test Product",
+                Name = "Test Product 123",
                 Description = "Test Description",
                 Price = 99.99m,
                 Amount = 10,
@@ -40,10 +40,8 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var product = await this.DbContext.Products.FirstOrDefaultAsync(p => p.Name == "Test Product");
-            product.ShouldNotBeNull();
-            product!.Name.ShouldBe("Test Product");
-            product.Price.ShouldBe(99.99m);
+            var product = await this.DbContext.Products.FirstOrDefaultAsync(p => p.Name == createDto.Name);
+            product.Should().BeEquivalentTo(createDto);
         }
 
         /// <summary>
@@ -55,17 +53,15 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
         {
             // Arrange
             var categoryId = await this.SetupCategory();
-            var productId = await this.SetupProduct(categoryId);
+            var product = await this.SetupProduct(categoryId);
 
             // Act
-            var response = await this.HttpClient.GetAsync($"api/products/{productId}");
+            var response = await this.HttpClient.GetAsync($"api/products/{product.Id}");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var productDto = await response.Content.ReadFromJsonAsync<ResponseProductDto>();
-            productDto.ShouldNotBeNull();
-            productDto!.Id.ShouldBe(productId);
-            productDto.Name.ShouldBe("Test Product");
+            productDto.Should().BeEquivalentTo(product);
         }
 
         /// <summary>
@@ -89,7 +85,7 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
         /// Sets up a test product in the database.
         /// </summary>
         /// <returns>Product ID.</returns>
-        private async Task<int> SetupProduct(int categoryId)
+        private async Task<ProductEntity> SetupProduct(int categoryId)
         {
             var product = new ProductEntity
             {
@@ -102,7 +98,7 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
 
             await this.DbContext.Products.AddAsync(product);
             await this.DbContext.SaveChangesAsync();
-            return product.Id;
+            return product;
         }
     }
 }

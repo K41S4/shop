@@ -4,6 +4,7 @@ using CartApp.Models;
 using CartApp.WebApi.Controllers.v1;
 using CartApp.WebApi.Dtos;
 using CartApp.WebApi.MappingProfiles;
+using FluentAssertions;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -49,9 +50,7 @@ namespace CartApp.UnitTests.WebApi.Controllers.v1
             var result = await controller.GetCartInfo(cartId);
 
             // Assert
-            result.ShouldBeOfType<NotFoundObjectResult>();
-            var notFoundResult = result as NotFoundObjectResult;
-            notFoundResult?.Value.ShouldBe($"Cart with {cartId} ID was not found.");
+            result.Should().BeEquivalentTo(new NotFoundObjectResult($"Cart with {cartId} ID was not found."));
         }
 
         /// <summary>
@@ -86,13 +85,8 @@ namespace CartApp.UnitTests.WebApi.Controllers.v1
             var result = await controller.GetCartInfo(cartId);
 
             // Assert
-            result.ShouldBeOfType<OkObjectResult>();
-            var okResult = result as OkObjectResult;
-            okResult?.Value.ShouldBeOfType<ResponseCart>();
-            var cartDto = okResult?.Value as ResponseCart;
-            cartDto?.Id.ShouldBe(cartId);
-            cartDto?.Items.ShouldNotBeNull();
-            cartDto?.Items?.Count.ShouldBe(1);
+            result.Should().BeEquivalentTo(new OkObjectResult(cart), options => options
+                .ComparingByMembers<ResponseCart>());
         }
 
         /// <summary>
@@ -116,7 +110,6 @@ namespace CartApp.UnitTests.WebApi.Controllers.v1
             var exception =
                 await Assert.ThrowsAsync<NotFoundException>(async () => await controller.DeleteItemFromCart(cartId, itemId));
             exception.Message.ShouldBe("Cart with non-existent-id ID was not found.");
-
         }
 
         /// <summary>

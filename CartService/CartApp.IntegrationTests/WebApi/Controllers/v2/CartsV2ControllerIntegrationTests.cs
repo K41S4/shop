@@ -49,7 +49,6 @@ namespace CartApp.IntegrationTests.WebApi.Controllers.v2
             // Assert
             response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
             var cartItems = await response.Content.ReadFromJsonAsync<List<ResponseCartItem>>();
-            cartItems.ShouldNotBeNull();
             cartItems.Should().BeEquivalentTo(new List<AddCartItem> { cartItemDto, cartItemDto2 }, options => options
                 .ComparingByMembers<AddCartItem>());
         }
@@ -80,7 +79,6 @@ namespace CartApp.IntegrationTests.WebApi.Controllers.v2
             var getResponse = await this.HttpClient.GetAsync($"api/v2/carts/{cartId}");
             getResponse.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
             var cartItems = await getResponse.Content.ReadFromJsonAsync<List<ResponseCartItem>>();
-            cartItems.ShouldNotBeNull();
             cartItems.Should().BeEquivalentTo(new List<AddCartItem> { cartItemDto }, options => options
                 .ComparingByMembers<AddCartItem>());
         }

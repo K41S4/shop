@@ -35,8 +35,7 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.Created);
 
             var category = await this.DbContext.Categories.FirstOrDefaultAsync(c => c.Name == "Test");
-            category.ShouldNotBeNull();
-            category!.Name.ShouldBe("Test");
+            category?.Name.ShouldBe("Test");
         }
 
         /// <summary>
@@ -55,9 +54,7 @@ namespace Catalog.IntegrationTests.WebApi.Controllers
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var categoryDto = await response.Content.ReadFromJsonAsync<ResponseCategoryDto>();
-            categoryDto.ShouldNotBeNull();
-            categoryDto!.Id.ShouldBe(categoryId);
-            categoryDto.Name.ShouldBe("Test Category");
+            categoryDto.ShouldBeEquivalentTo(new ResponseCategoryDto { Id = categoryId, Name = "Test Category" });
         }
 
         /// <summary>

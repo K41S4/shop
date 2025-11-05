@@ -95,9 +95,7 @@ namespace Catalog.WebAPI.UnitTests.Controllers
             var result = await controller.GetProduct(productId);
 
             // Assert
-            result.Should().BeOfType<OkObjectResult>();
-            var okResult = result as OkObjectResult;
-            okResult?.Value.ShouldBeEquivalentTo(new ResponseProductDto
+            result.ShouldBeEquivalentTo(new OkObjectResult(new ResponseProductDto
             {
                 Id = productId,
                 Name = "Test Product",
@@ -105,7 +103,7 @@ namespace Catalog.WebAPI.UnitTests.Controllers
                 Price = 99.99m,
                 Amount = 10,
                 CategoryId = 1,
-            });
+            }));
         }
     }
 }

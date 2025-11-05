@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using CartApp.IntegrationTests.WebApi.Common;
 using CartApp.WebApi.Dtos;
 using FluentAssertions;
+using Mapster;
 using Shouldly;
 
 namespace CartApp.IntegrationTests.WebApi.Controllers.v1
@@ -49,10 +50,12 @@ namespace CartApp.IntegrationTests.WebApi.Controllers.v1
             // Assert
             response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
             var cartDto = await response.Content.ReadFromJsonAsync<ResponseCart>();
-            cartDto.ShouldNotBeNull();
-            cartDto!.Id.ShouldBeEquivalentTo(cartId);
-            cartDto.Items.ShouldNotBeNull();
-            cartDto.Items!.Count.ShouldBeEquivalentTo(2);
+            cartDto.Should().BeEquivalentTo(new ResponseCart
+            {
+                Id = cartId,
+                Items = new List<ResponseCartItem>
+                    { cartItemDto.Adapt<ResponseCartItem>(), cartItemDto2.Adapt<ResponseCartItem>() },
+            });
         }
 
         /// <summary>
@@ -81,7 +84,6 @@ namespace CartApp.IntegrationTests.WebApi.Controllers.v1
             var getResponse = await this.HttpClient.GetAsync($"api/v1/carts/{cartId}");
             getResponse.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
             var cartDto = await getResponse.Content.ReadFromJsonAsync<ResponseCart>();
-            cartDto.ShouldNotBeNull();
             cartDto!.Items.Should().BeEquivalentTo(new List<AddCartItem> { cartItemDto }, options => options
                 .ComparingByMembers<AddCartItem>());
         }
