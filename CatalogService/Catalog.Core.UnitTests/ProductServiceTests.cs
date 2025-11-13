@@ -35,6 +35,10 @@ namespace Catalog.Core.UnitTests
         public async Task GetProducts_ShouldGetAllProducts()
         {
             // Arrange
+            var category = new Category
+            {
+                Name = new Name { Value = "Test" },
+            };
             var product = new Product
             {
                 Name = new Name { Value = "Test product" },
@@ -42,10 +46,11 @@ namespace Catalog.Core.UnitTests
                 CategoryId = 1,
                 Price = new Price { Value = 1.1m },
             };
-            this.mockProductRepository.Setup(x => x.GetProducts()).ReturnsAsync(new List<Product> { product });
+            this.mockProductRepository.Setup(x => x.GetProducts(1, 1, 1)).ReturnsAsync(new List<Product> { product });
+            this.mockCategoryRepository.Setup(x => x.GetCategory(1)).ReturnsAsync(category);
 
             // Act
-            var result = await this.productService.GetProducts();
+            var result = await this.productService.GetProducts(1, 1, 1);
 
             // Assert
             result.Should().ContainSingle();
@@ -84,15 +89,22 @@ namespace Catalog.Core.UnitTests
         public async Task UpdateProduct_InvalidCategory_ShouldThrow()
         {
             // Arrange
+            var category = new Category
+            {
+                Id = 1,
+                Name = new Name { Value = "Test" },
+            };
             var product = new Product
             {
+                Id = 1,
                 Name = new Name { Value = "Test product" },
                 Amount = new Amount { Value = 1 },
-                CategoryId = 1,
+                CategoryId = 2,
                 Price = new Price { Value = 1.1m },
             };
 
-            this.mockCategoryRepository.Setup(x => x.GetCategory(It.IsAny<int>())).ReturnsAsync((Category?)null);
+            this.mockProductRepository.Setup(x => x.GetProduct(product.Id)).ReturnsAsync(product);
+            this.mockCategoryRepository.Setup(x => x.GetCategory(category.Id)).ReturnsAsync(category);
 
             // Act
             // Assert

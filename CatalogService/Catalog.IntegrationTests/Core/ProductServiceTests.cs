@@ -10,7 +10,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Catalog.IntegrationTests
+namespace Catalog.IntegrationTests.Core
 {
     /// <summary>
     /// Tests for Product Service.
@@ -19,7 +19,7 @@ namespace Catalog.IntegrationTests
     {
         private readonly CatalogDBContext dbContext;
         private readonly ProductService productService;
-        private bool disposed = false;
+        private bool disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductServiceTests"/> class.

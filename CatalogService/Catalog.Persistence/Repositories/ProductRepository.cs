@@ -34,9 +34,14 @@ namespace Catalog.Persistence.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<Product>> GetProducts()
+        public async Task<IEnumerable<Product>> GetProducts(int categoryId, int page, int limit)
         {
-            var productEntities = await this.dbContext.Products.ToListAsync();
+            var productEntities = await this.dbContext.Products
+                .Where(product => product.CategoryId == categoryId)
+                .OrderBy(product => product.Id)
+                .Skip(page * limit)
+                .Take(limit)
+                .ToListAsync();
             return this.mapper.Map<IEnumerable<Product>>(productEntities);
         }
 

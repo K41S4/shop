@@ -33,17 +33,5 @@ namespace Catalog.Persistence.DBContext
         /// Gets or sets the products table.
         /// </summary>
         public virtual DbSet<ProductEntity> Products { get; set; }
-
-        /// <summary>
-        /// Configures the database connection.
-        /// </summary>
-        /// <param name="optionsBuilder">The options' builder.</param>
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=catalogappdb;Username=postgres;Password=123456");
-            }
-        }
     }
 }

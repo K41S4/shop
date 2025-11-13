@@ -1,4 +1,5 @@
-﻿using CartApp.BusinessLogic.Services;
+﻿using CartApp.BusinessLogic.Exceptions;
+using CartApp.BusinessLogic.Services;
 using CartApp.Models;
 using CartApp.Persistence.Repositories;
 using Moq;
@@ -19,7 +20,7 @@ namespace CartApp.UnitTests.BusinessLogic.Services
         public async Task GetCartItems_CallsRepository()
         {
             // Arrange
-            var cartId = 1;
+            const string cartId = "1";
             var cart = new Cart
             {
                 Id = cartId,
@@ -63,7 +64,7 @@ namespace CartApp.UnitTests.BusinessLogic.Services
         public async Task RemoveItemFromCart_ItemDoNotExistInCart_DoesNotUpdateCart()
         {
             // Arrange
-            var cartId = 1;
+            const string cartId = "1";
             var cart = new Cart
             {
                 Id = cartId,
@@ -78,22 +79,17 @@ namespace CartApp.UnitTests.BusinessLogic.Services
                     },
                 },
             };
-            var itemToRemove = new CartItem
-            {
-                Id = 111,
-                Name = "Product1",
-                Price = 1.1m,
-                Quantity = 1,
-            };
+            const int itemIdToRemove = 111;
+
             var mockRepo = new Mock<ICartRepository>();
             mockRepo.Setup(repo => repo.GetCart(cartId)).ReturnsAsync(cart);
 
             var service = new CartService(mockRepo.Object);
 
-            // Act
-            await service.RemoveItemFromCart(itemToRemove, cartId);
-
             // Assert
+            var ex = await Assert.ThrowsAsync<NotFoundException>(async () =>
+                await service.RemoveItemFromCart(cartId, itemIdToRemove));
+            ex.ShouldBeEquivalentTo(ex, "Cart item with 111 ID was not found.");
             mockRepo.Verify(repo => repo.SaveCart(It.IsAny<Cart>()), Times.Never);
         }
 
@@ -105,7 +101,7 @@ namespace CartApp.UnitTests.BusinessLogic.Services
         public async Task RemoveItemFromCart_ItemExistsInCart_UpdatesCart()
         {
             // Arrange
-            var cartId = 1;
+            const string cartId = "1";
             var cart = new Cart
             {
                 Id = cartId,
@@ -120,20 +116,15 @@ namespace CartApp.UnitTests.BusinessLogic.Services
                     },
                 },
             };
-            var itemToRemove = new CartItem
-            {
-                Id = 123,
-                Name = "Product1",
-                Price = 1.1m,
-                Quantity = 1,
-            };
+            const int itemIdToRemove = 123;
+
             var mockRepo = new Mock<ICartRepository>();
             mockRepo.Setup(repo => repo.GetCart(cartId)).ReturnsAsync(cart);
 
             var service = new CartService(mockRepo.Object);
 
             // Act
-            await service.RemoveItemFromCart(itemToRemove, cartId);
+            await service.RemoveItemFromCart(cartId, itemIdToRemove);
 
             // Assert
             mockRepo.Verify(repo => repo.SaveCart(It.IsAny<Cart>()), Times.Once);

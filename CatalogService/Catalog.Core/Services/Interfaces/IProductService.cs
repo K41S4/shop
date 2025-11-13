@@ -15,10 +15,13 @@ namespace Catalog.Core.Services.Interfaces
         public Task<Product?> GetProduct(int id);
 
         /// <summary>
-        /// Gets all products.
+        /// Gets products with filtering.
         /// </summary>
-        /// <returns>A collection of all products.</returns>
-        public Task<IEnumerable<Product>> GetProducts();
+        /// <param name="categoryId">The category id to filter by.</param>
+        /// <param name="page">The requested page.</param>
+        /// <param name="limit">The amount of products per page.</param>
+        /// <returns>A collection of products.</returns>
+        public Task<IEnumerable<Product>> GetProducts(int categoryId, int page, int limit);
 
         /// <summary>
         /// Adds a new product.

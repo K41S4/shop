@@ -19,7 +19,7 @@ namespace CartApp.Persistence.Repositories
         /// </summary>
         /// <param name="cartId">The cart id.</param>
         /// <returns>The cart if found.</returns>
-        public Task<Cart> GetCart(int cartId);
+        public Task<Cart?> GetCart(string cartId);
 
         /// <summary>
         /// Saves a cart.
