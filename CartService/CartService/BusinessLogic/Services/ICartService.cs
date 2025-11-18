@@ -36,5 +36,15 @@ namespace CartApp.BusinessLogic.Services
         /// <param name="itemId">The item id to remove.</param>
         /// <returns>Task.</returns>
         public Task RemoveItemFromCart(string cartId, int itemId);
+
+        /// <summary>
+        /// Updates a cart item when product information changes.
+        /// </summary>
+        /// <param name="productId">The product id.</param>
+        /// <param name="name">The new product name.</param>
+        /// <param name="price">The new product price.</param>
+        /// <param name="imageUrl">The new product image URL.</param>
+        /// <returns>Task.</returns>
+        public Task UpdateCartItem(int productId, string name, decimal price, string? imageUrl);
     }
 }

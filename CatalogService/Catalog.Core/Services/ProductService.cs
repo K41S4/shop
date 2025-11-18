@@ -1,5 +1,6 @@
 ﻿using Catalog.Core.Entities;
 using Catalog.Core.Exceptions;
+using Catalog.Core.Messaging;
 using Catalog.Core.Repositories;
 using Catalog.Core.Services.Interfaces;
 
@@ -12,16 +13,19 @@ namespace Catalog.Core.Services
     {
         private readonly IProductRepository productRepo;
         private readonly ICategoryRepository categoryRepo;
+        private readonly IProductUpdatePublisher updatePublisher;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductService"/> class.
         /// </summary>
         /// <param name="productRepo">The product repository.</param>
         /// <param name="categoryRepo">The category repository.</param>
-        public ProductService(IProductRepository productRepo, ICategoryRepository categoryRepo)
+        /// <param name="updatePublisher">Product update publisher.</param>
+        public ProductService(IProductRepository productRepo, ICategoryRepository categoryRepo, IProductUpdatePublisher updatePublisher)
         {
             this.productRepo = productRepo;
             this.categoryRepo = categoryRepo;
+            this.updatePublisher = updatePublisher;
         }
 
         /// <inheritdoc/>
@@ -83,7 +87,20 @@ namespace Catalog.Core.Services
                 throw new InvalidCategoryException();
             }
 
-            await this.productRepo.UpdateProduct(product);
+            await this.ProductUpdateNotify(product);
+        }
+
+        private async Task ProductUpdateNotify(Product product)
+        {
+            var message = new ProductUpdatedMessage
+            {
+                ProductId = product.Id,
+                Name = product.Name.Value!,
+                Price = product.Price.Value,
+                ImageUrl = product.Image?.Value,
+            };
+
+            await this.updatePublisher.PublishProductUpdateAsync(message);
         }
     }
 }

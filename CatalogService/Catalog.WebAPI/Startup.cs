@@ -10,8 +10,9 @@ using Catalog.Persistence.DBContext;
 using Catalog.WebAPI.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.OpenApi.Models;
+using Catalog.Core.Messaging;
 using Catalog.WebAPI.Controllers;
+using Catalog.WebAPI.Messaging;
 
 namespace Catalog.WebAPI
 {
@@ -61,10 +62,13 @@ namespace Catalog.WebAPI
                 options.IncludeXmlComments(xmlPath);
             });
 
-            services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IProductService, ProductService>();
+
+            services.Configure<KafkaConfig>(this.Configuration.GetSection("Kafka"));
+            services.AddSingleton<IProductUpdatePublisher, ProductUpdatePublisher>();
 
             this.ConfigureDbContext(services);
         }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Catalog.Core.Entities;
 using Catalog.Core.Entities.ValueObjects;
+using Catalog.Core.Messaging;
 using Catalog.Core.Services;
 using Catalog.Persistence.DBContext;
 using Catalog.Persistence.Entities;
@@ -9,6 +10,7 @@ using Catalog.Persistence.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Catalog.IntegrationTests.Core
 {
@@ -43,8 +45,9 @@ namespace Catalog.IntegrationTests.Core
 
             var productRepository = new ProductRepository(this.dbContext, mapper);
             var categoryRepository = new CategoryRepository(this.dbContext, mapper);
+            var mockProductUpdatePublisher = new Mock<IProductUpdatePublisher>();
 
-            this.productService = new ProductService(productRepository, categoryRepository);
+            this.productService = new ProductService(productRepository, categoryRepository, mockProductUpdatePublisher.Object);
         }
 
         /// <summary>
