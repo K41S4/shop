@@ -46,8 +46,9 @@ namespace Catalog.IntegrationTests.Core
             var productRepository = new ProductRepository(this.dbContext, mapper);
             var categoryRepository = new CategoryRepository(this.dbContext, mapper);
             var mockProductUpdatePublisher = new Mock<IProductUpdatePublisher>();
+            var mockMapper = new Mock<IMapper>();
 
-            this.productService = new ProductService(productRepository, categoryRepository, mockProductUpdatePublisher.Object);
+            this.productService = new ProductService(productRepository, categoryRepository, mockProductUpdatePublisher.Object, mockMapper.Object);
         }
 
         /// <summary>

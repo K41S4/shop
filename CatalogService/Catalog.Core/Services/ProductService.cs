@@ -1,4 +1,5 @@
-﻿using Catalog.Core.Entities;
+﻿using AutoMapper;
+using Catalog.Core.Entities;
 using Catalog.Core.Exceptions;
 using Catalog.Core.Messaging;
 using Catalog.Core.Repositories;
@@ -14,6 +15,7 @@ namespace Catalog.Core.Services
         private readonly IProductRepository productRepo;
         private readonly ICategoryRepository categoryRepo;
         private readonly IProductUpdatePublisher updatePublisher;
+        private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductService"/> class.
@@ -21,11 +23,13 @@ namespace Catalog.Core.Services
         /// <param name="productRepo">The product repository.</param>
         /// <param name="categoryRepo">The category repository.</param>
         /// <param name="updatePublisher">Product update publisher.</param>
-        public ProductService(IProductRepository productRepo, ICategoryRepository categoryRepo, IProductUpdatePublisher updatePublisher)
+        /// <param name="mapper">Mapper.</param>
+        public ProductService(IProductRepository productRepo, ICategoryRepository categoryRepo, IProductUpdatePublisher updatePublisher, IMapper mapper)
         {
             this.productRepo = productRepo;
             this.categoryRepo = categoryRepo;
             this.updatePublisher = updatePublisher;
+            this.mapper = mapper;
         }
 
         /// <inheritdoc/>
@@ -87,20 +91,7 @@ namespace Catalog.Core.Services
                 throw new InvalidCategoryException();
             }
 
-            await this.ProductUpdateNotify(product);
-        }
-
-        private async Task ProductUpdateNotify(Product product)
-        {
-            var message = new ProductUpdatedMessage
-            {
-                ProductId = product.Id,
-                Name = product.Name.Value!,
-                Price = product.Price.Value,
-                ImageUrl = product.Image?.Value,
-            };
-
-            await this.updatePublisher.PublishProductUpdateAsync(message);
+            await this.updatePublisher.PublishProductUpdateAsync(this.mapper.Map<ProductUpdatedMessage>(product));
         }
     }
 }

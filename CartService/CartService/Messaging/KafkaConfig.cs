@@ -36,6 +36,16 @@ public class KafkaConfig
     public int RetryDelayMs { get; set; } = 1000;
 
     /// <summary>
+    /// Gets or sets the maximum number of retries for DLQ.
+    /// </summary>
+    public int MaxDlqRetries { get; set; } = 3;
+
+    /// <summary>
+    /// Gets or sets the initial DLQ retry delay in milliseconds.
+    /// </summary>
+    public int DlqRetryDelayMs { get; set; } = 1000;
+
+    /// <summary>
     /// Gets or sets the producer flush timeout in seconds.
     /// </summary>
     public int ProducerFlushTimeoutSeconds { get; set; } = 10;

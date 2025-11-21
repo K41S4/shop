@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Catalog.Core.Messaging;
 using Catalog.WebAPI.Controllers;
 using Catalog.WebAPI.Messaging;
+using Catalog.Core.MappingProfiles;
 
 namespace Catalog.WebAPI
 {
@@ -48,6 +49,7 @@ namespace Catalog.WebAPI
                     c.AddProfile<ProductProfile>();
                     c.AddProfile<ProductDtosProfile>();
                     c.AddProfile<CategoryDtosProfile>();
+                    c.AddProfile<ProductMessageProfile>();
                 }, new NullLoggerFactory());
 
             services.AddSingleton<IMapper>(s => config.CreateMapper());
