@@ -2,6 +2,7 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using CartApp.BusinessLogic.Services;
+using CartApp.Messaging;
 using CartApp.Persistence.Repositories;
 using CartApp.WebApi.Controllers.v1;
 using CartApp.WebApi.Filters;
@@ -70,6 +71,10 @@ public class Startup
 
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
+
+        services.Configure<KafkaConfig>(this.Configuration.GetSection("Kafka"));
+        services.AddScoped<IProductUpdateHandler, ProductUpdateHandler>();
+        services.AddHostedService<ProductUpdateConsumer>();
     }
 
     /// <summary>

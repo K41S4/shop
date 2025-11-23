@@ -1,6 +1,8 @@
-﻿using Catalog.Core.Entities;
+﻿using AutoMapper;
+using Catalog.Core.Entities;
 using Catalog.Core.Entities.ValueObjects;
 using Catalog.Core.Exceptions;
+using Catalog.Core.Messaging;
 using Catalog.Core.Repositories;
 using Catalog.Core.Services;
 using FluentAssertions;
@@ -15,6 +17,8 @@ namespace Catalog.Core.UnitTests
     {
         private readonly Mock<IProductRepository> mockProductRepository;
         private readonly Mock<ICategoryRepository> mockCategoryRepository;
+        private readonly Mock<IProductUpdatePublisher> mockProductUpdatePublisher;
+        private readonly Mock<IMapper> mockMapper;
         private readonly ProductService productService;
 
         /// <summary>
@@ -24,7 +28,13 @@ namespace Catalog.Core.UnitTests
         {
             this.mockProductRepository = new Mock<IProductRepository>();
             this.mockCategoryRepository = new Mock<ICategoryRepository>();
-            this.productService = new ProductService(this.mockProductRepository.Object, this.mockCategoryRepository.Object);
+            this.mockProductUpdatePublisher = new Mock<IProductUpdatePublisher>();
+            this.mockMapper = new Mock<IMapper>();
+            this.productService = new ProductService(
+                this.mockProductRepository.Object,
+                this.mockCategoryRepository.Object,
+                this.mockProductUpdatePublisher.Object,
+                this.mockMapper.Object);
         }
 
         /// <summary>

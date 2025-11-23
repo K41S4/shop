@@ -27,5 +27,11 @@ namespace CartApp.Persistence.Repositories
         /// <param name="cart">The cart to save.</param>
         /// <returns>Task.</returns>
         public Task SaveCart(Cart cart);
+
+        /// <summary>
+        /// Gets all carts.
+        /// </summary>
+        /// <returns>A collection of all carts.</returns>
+        public Task<IEnumerable<Cart>> GetAllCarts();
     }
 }

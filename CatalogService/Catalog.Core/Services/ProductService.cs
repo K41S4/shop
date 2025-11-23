@@ -1,5 +1,7 @@
-﻿using Catalog.Core.Entities;
+﻿using AutoMapper;
+using Catalog.Core.Entities;
 using Catalog.Core.Exceptions;
+using Catalog.Core.Messaging;
 using Catalog.Core.Repositories;
 using Catalog.Core.Services.Interfaces;
 
@@ -12,16 +14,22 @@ namespace Catalog.Core.Services
     {
         private readonly IProductRepository productRepo;
         private readonly ICategoryRepository categoryRepo;
+        private readonly IProductUpdatePublisher updatePublisher;
+        private readonly IMapper mapper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProductService"/> class.
         /// </summary>
         /// <param name="productRepo">The product repository.</param>
         /// <param name="categoryRepo">The category repository.</param>
-        public ProductService(IProductRepository productRepo, ICategoryRepository categoryRepo)
+        /// <param name="updatePublisher">Product update publisher.</param>
+        /// <param name="mapper">Mapper.</param>
+        public ProductService(IProductRepository productRepo, ICategoryRepository categoryRepo, IProductUpdatePublisher updatePublisher, IMapper mapper)
         {
             this.productRepo = productRepo;
             this.categoryRepo = categoryRepo;
+            this.updatePublisher = updatePublisher;
+            this.mapper = mapper;
         }
 
         /// <inheritdoc/>
@@ -83,7 +91,7 @@ namespace Catalog.Core.Services
                 throw new InvalidCategoryException();
             }
 
-            await this.productRepo.UpdateProduct(product);
+            await this.updatePublisher.PublishProductUpdateAsync(this.mapper.Map<ProductUpdatedMessage>(product));
         }
     }
 }

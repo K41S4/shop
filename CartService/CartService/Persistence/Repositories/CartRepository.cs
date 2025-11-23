@@ -47,5 +47,12 @@ namespace CartApp.Persistence.Repositories
             var carts = this.liteDb.GetCollection<Cart>();
             await carts.UpsertAsync(cart);
         }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<Cart>> GetAllCarts()
+        {
+            var carts = this.liteDb.GetCollection<Cart>();
+            return await carts.Query().ToListAsync();
+        }
     }
 }

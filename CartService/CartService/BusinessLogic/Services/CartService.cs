@@ -76,5 +76,36 @@ namespace CartApp.BusinessLogic.Services
 
             await repository.SaveCart(cart);
         }
+
+        /// <inheritdoc/>
+        public async Task UpdateCartItem(int productId, string name, decimal price, string? imageUrl)
+        {
+            var allCarts = await repository.GetAllCarts();
+
+            var cartsWithProduct = allCarts.Where(cart => cart.Items.Any(item => item.Id == productId));
+
+            foreach (var cart in cartsWithProduct)
+            {
+                var cartItem = cart.Items.FirstOrDefault(x => x.Id == productId);
+                if (cartItem is null)
+                {
+                    continue;
+                }
+
+                cart.Items.Remove(cartItem);
+
+                var updatedItem = new CartItem
+                {
+                    Id = productId,
+                    Name = name,
+                    Price = price,
+                    Quantity = cartItem.Quantity,
+                    ImageUrl = imageUrl,
+                };
+
+                cart.Items.Add(updatedItem);
+                await repository.SaveCart(cart);
+            }
+        }
     }
 }
