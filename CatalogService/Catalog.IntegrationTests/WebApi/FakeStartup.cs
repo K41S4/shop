@@ -1,5 +1,6 @@
 ﻿using Catalog.Persistence.DBContext;
 using Catalog.WebAPI;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,14 @@ namespace Catalog.IntegrationTests.WebApi
         {
             services.AddDbContext<CatalogDBContext>(options =>
                 options.UseInMemoryDatabase("InMemoryCatalogTestDb"));
+        }
+
+        /// <inheritdoc />
+        protected override void ConfigureAuthentication(IServiceCollection services)
+        {
+            services.AddAuthentication("Test")
+                .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>(
+                    "Test", options => { });
         }
     }
 }

@@ -2,6 +2,7 @@ using AutoMapper;
 using Catalog.Core.Entities;
 using Catalog.Core.Services.Interfaces;
 using Catalog.WebAPI.DTOs.Category;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.WebAPI.Controllers;
@@ -21,6 +22,7 @@ public class CategoriesController(ICategoryService categoryService, IMapper mapp
     /// <param name="dto">Category to create.</param>
     /// <returns>The response.</returns>
     [HttpPost]
+    [Authorize(Roles = "Manager")]
     public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto dto)
     {
         var category = mapper.Map<Category>(dto);
@@ -37,6 +39,7 @@ public class CategoriesController(ICategoryService categoryService, IMapper mapp
     /// <param name="dto">New category values.</param>
     /// <returns>The response.</returns>
     [HttpPut("{categoryId}")]
+    [Authorize(Roles = "Manager")]
     public async Task<IActionResult> UpdateCategory([FromRoute] int categoryId, [FromBody] UpdateCategoryDto dto)
     {
         var category = mapper.Map<Category>(dto);
@@ -53,6 +56,7 @@ public class CategoriesController(ICategoryService categoryService, IMapper mapp
     /// <param name="categoryId">Category id to get.</param>
     /// <returns>The response.</returns>
     [HttpGet("{categoryId}")]
+    [Authorize(Roles = "Manager,StoreCustomer")]
     public async Task<IActionResult> GetCategory([FromRoute] int categoryId)
     {
         var category = await categoryService.GetCategory(categoryId);
@@ -71,6 +75,7 @@ public class CategoriesController(ICategoryService categoryService, IMapper mapp
     /// </summary>
     /// <returns>The response.</returns>
     [HttpGet]
+    [Authorize(Roles = "Manager,StoreCustomer")]
     public async Task<IActionResult> GetCategories()
     {
         var categories = await categoryService.GetCategories();
@@ -85,6 +90,7 @@ public class CategoriesController(ICategoryService categoryService, IMapper mapp
     /// <param name="categoryId">Category to remove.</param>
     /// <returns>The response.</returns>
     [HttpDelete("{categoryId}")]
+    [Authorize(Roles = "Manager")]
     public async Task<IActionResult> RemoveCategory([FromRoute] int categoryId)
     {
         await categoryService.RemoveCategory(categoryId);

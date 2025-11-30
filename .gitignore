@@ -83,8 +83,12 @@ TestResults/
 *.mdf
 *.ldf
 
-# Entity Framework Migrations
-Migrations/
+# Identity Server
+tempkey.jwk
+*.jwk
+# Duende IdentityServer keys
+**/keys/*.json
+**/keys/is-signing-key-*.json
 
 # Others
 _ReSharper*/

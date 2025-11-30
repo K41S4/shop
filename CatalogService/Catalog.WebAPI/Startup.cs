@@ -14,6 +14,8 @@ using Catalog.Core.Messaging;
 using Catalog.WebAPI.Controllers;
 using Catalog.WebAPI.Messaging;
 using Catalog.Core.MappingProfiles;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Catalog.WebAPI
 {
@@ -54,6 +56,8 @@ namespace Catalog.WebAPI
 
             services.AddSingleton<IMapper>(s => config.CreateMapper());
 
+            this.ConfigureAuthentication(services);
+
             services.AddControllers()
                 .AddApplicationPart(typeof(CategoriesController).Assembly);
 
@@ -86,6 +90,26 @@ namespace Catalog.WebAPI
         }
 
         /// <summary>
+        /// Configure Authentication.
+        /// </summary>
+        /// <param name="services">Service collection.</param>
+        protected virtual void ConfigureAuthentication(IServiceCollection services)
+        {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+                {
+                    options.Authority = this.Configuration["Authentication:Authority"];
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false,
+                        ValidateIssuer = true,
+                        ValidateLifetime = true
+                    };
+                    options.RequireHttpsMetadata = false;
+                });
+        }
+
+        /// <summary>
         /// Configure application.
         /// </summary>
         /// <param name="app">Application builder.</param>
@@ -107,6 +131,7 @@ namespace Catalog.WebAPI
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
