@@ -1,4 +1,5 @@
 ﻿using LiteDB.Async;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,14 @@ namespace CartApp.IntegrationTests.WebApi.Common
                 var connectionString = config.GetConnectionString("CartDB");
                 return new LiteDatabaseAsync(connectionString);
             });
+        }
+
+        /// <inheritdoc />
+        protected override void ConfigureAuthentication(IServiceCollection services)
+        {
+            services.AddAuthentication("Test")
+                .AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>(
+                    "Test", options => { });
         }
     }
 }

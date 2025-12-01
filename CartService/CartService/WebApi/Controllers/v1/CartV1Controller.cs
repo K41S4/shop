@@ -3,6 +3,7 @@ using CartApp.BusinessLogic.Services;
 using CartApp.Models;
 using CartApp.WebApi.Dtos;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CartApp.WebApi.Controllers.v1;
@@ -15,6 +16,7 @@ namespace CartApp.WebApi.Controllers.v1;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/carts")]
+[Authorize(Roles = "Manager,StoreCustomer")]
 public class CartsV1Controller(ICartService service, IMapper mapper) : ControllerBase
 {
     /// <summary>

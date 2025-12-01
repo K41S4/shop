@@ -7,9 +7,12 @@ using CartApp.Persistence.Repositories;
 using CartApp.WebApi.Controllers.v1;
 using CartApp.WebApi.Filters;
 using CartApp.WebApi.MappingProfiles;
+using CartApp.WebApi.Middleware;
 using LiteDB.Async;
 using Mapster;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CartApp;
 
@@ -38,6 +41,8 @@ public class Startup
     /// <param name="services">Service collection.</param>
     public void ConfigureServices(IServiceCollection services)
     {
+        this.ConfigureAuthentication(services);
+
         services.AddControllers(options =>
         {
             options.Filters.Add<ExceptionFilter>();
@@ -99,6 +104,8 @@ public class Startup
 
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseAuthentication();
+        app.UseMiddleware<AccessTokenLoggingMiddleware>();
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
@@ -118,5 +125,25 @@ public class Startup
             var connectionString = config.GetConnectionString("CartDB");
             return new LiteDatabaseAsync(connectionString);
         });
+    }
+
+    /// <summary>
+    /// Configures the Authentication.
+    /// </summary>
+    /// <param name="services">Service collection.</param>
+    protected virtual void ConfigureAuthentication(IServiceCollection services)
+    {
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.Authority = this.Configuration["Authentication:Authority"];
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidateLifetime = true,
+                };
+                options.RequireHttpsMetadata = false;
+            });
     }
 }
