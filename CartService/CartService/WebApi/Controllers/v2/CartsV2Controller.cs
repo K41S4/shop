@@ -16,7 +16,7 @@ namespace CartApp.WebApi.Controllers.v2;
 [ApiController]
 [ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/carts")]
-[Authorize]
+[Authorize(Roles = "Manager,StoreCustomer")]
 public class CartsV2Controller(ICartService service, IMapper mapper) : ControllerBase
 {
     /// <summary>

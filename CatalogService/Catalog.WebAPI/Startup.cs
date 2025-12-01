@@ -57,6 +57,7 @@ namespace Catalog.WebAPI
             services.AddSingleton<IMapper>(s => config.CreateMapper());
 
             this.ConfigureAuthentication(services);
+            ConfigureAuthorization(services);
 
             services.AddControllers()
                 .AddApplicationPart(typeof(CategoriesController).Assembly);
@@ -103,10 +104,30 @@ namespace Catalog.WebAPI
                     {
                         ValidateAudience = false,
                         ValidateIssuer = true,
-                        ValidateLifetime = true
+                        ValidateLifetime = true,
                     };
                     options.RequireHttpsMetadata = false;
                 });
+        }
+
+        /// <summary>
+        /// Configure Authorization policies.
+        /// </summary>
+        /// <param name="services">Service collection.</param>
+        private static void ConfigureAuthorization(IServiceCollection services)
+        {
+            services.AddAuthorizationBuilder()
+                .AddPolicy("Read", policy =>
+                    policy.RequireClaim("permission", "Read"))
+                .AddPolicy("Create", policy =>
+                    policy.RequireClaim("permission", "Create")
+                          .RequireRole("Manager"))
+                .AddPolicy("Update", policy =>
+                    policy.RequireClaim("permission", "Update")
+                          .RequireRole("Manager"))
+                .AddPolicy("Delete", policy =>
+                    policy.RequireClaim("permission", "Delete")
+                          .RequireRole("Manager"));
         }
 
         /// <summary>

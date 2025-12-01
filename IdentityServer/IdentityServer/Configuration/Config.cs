@@ -23,6 +23,12 @@ public static class Config
                 DisplayName = "User roles",
                 UserClaims = new List<string> { "role" },
             },
+            new IdentityResource
+            {
+                Name = "permissions",
+                DisplayName = "User permissions",
+                UserClaims = new List<string> { "permission" },
+            },
         };
     }
 
@@ -48,6 +54,7 @@ public static class Config
                     "openid",
                     "profile",
                     "roles",
+                    "permissions",
                     "offline_access",
                 },
                 AccessTokenLifetime = 900,

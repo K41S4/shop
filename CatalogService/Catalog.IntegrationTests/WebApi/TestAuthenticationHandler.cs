@@ -33,6 +33,8 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
             new Claim(ClaimTypes.Name, "TestUser"),
             new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
             new Claim(ClaimTypes.Role, "Manager"),
+            new Claim("permission", "Create"),
+            new Claim("permission", "Read"),
         };
 
         var identity = new ClaimsIdentity(claims, this.Scheme.Name);

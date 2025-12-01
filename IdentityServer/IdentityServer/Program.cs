@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Duende.IdentityServer.Services;
 using IdentityServer.Configuration;
 using IdentityServer.Data;
@@ -69,21 +70,35 @@ namespace IdentityServer
 
             app.MapControllers();
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                if (!await roleManager.RoleExistsAsync("Manager"))
-                {
-                    await roleManager.CreateAsync(new IdentityRole("Manager"));
-                }
-
-                if (!await roleManager.RoleExistsAsync("StoreCustomer"))
-                {
-                    await roleManager.CreateAsync(new IdentityRole("StoreCustomer"));
-                }
-            }
+            await SeedRolesAndPermissions(app);
 
             await app.RunAsync();
+        }
+
+        private static async Task SeedRolesAndPermissions(WebApplication app)
+        {
+            using var scope = app.Services.CreateScope();
+
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            if (!await roleManager.RoleExistsAsync("Manager"))
+            {
+                var managerRole = new IdentityRole("Manager");
+                await roleManager.CreateAsync(managerRole);
+
+                await roleManager.AddClaimAsync(managerRole, new Claim("permission", Permissions.Read));
+                await roleManager.AddClaimAsync(managerRole, new Claim("permission", Permissions.Create));
+                await roleManager.AddClaimAsync(managerRole, new Claim("permission", Permissions.Update));
+                await roleManager.AddClaimAsync(managerRole, new Claim("permission", Permissions.Delete));
+            }
+
+            if (!await roleManager.RoleExistsAsync("StoreCustomer"))
+            {
+                var storeCustomerRole = new IdentityRole("StoreCustomer");
+                await roleManager.CreateAsync(storeCustomerRole);
+
+                await roleManager.AddClaimAsync(storeCustomerRole, new Claim("permission", Permissions.Read));
+            }
         }
     }
 }

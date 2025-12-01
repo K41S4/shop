@@ -7,19 +7,22 @@ using Microsoft.AspNetCore.Identity;
 namespace IdentityServer.Services;
 
 /// <summary>
-/// Profile service for including user roles in tokens.
+/// Profile service for including user roles and permissions in tokens.
 /// </summary>
 public class ProfileService : IProfileService
 {
     private readonly UserManager<AppUser> userManager;
+    private readonly RoleManager<IdentityRole> roleManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProfileService"/> class.
     /// </summary>
     /// <param name="userManager">User manager.</param>
-    public ProfileService(UserManager<AppUser> userManager)
+    /// <param name="roleManager">Role manager.</param>
+    public ProfileService(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
     {
         this.userManager = userManager;
+        this.roleManager = roleManager;
     }
 
     /// <summary>
@@ -33,8 +36,24 @@ public class ProfileService : IProfileService
         if (user != null)
         {
             var roles = await this.userManager.GetRolesAsync(user);
-            var claims = roles.Select(role => new Claim(ClaimTypes.Role, role));
-            context.IssuedClaims.AddRange(claims);
+
+            var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role));
+            context.IssuedClaims.AddRange(roleClaims);
+
+            foreach (var roleName in roles)
+            {
+                var role = await this.roleManager.FindByNameAsync(roleName);
+                if (role == null)
+                {
+                    continue;
+                }
+
+                var claims = await this.roleManager.GetClaimsAsync(role);
+                var rolePermissionClaims = claims
+                    .Where(c => c.Type == "permission")
+                    .Select(c => new Claim("permission", c.Value));
+                context.IssuedClaims.AddRange(rolePermissionClaims);
+            }
         }
     }
 

@@ -23,7 +23,7 @@ public class ProductsController(IProductService productService, IMapper mapper) 
     /// <param name="dto">Product to create.</param>
     /// <returns>The response.</returns>
     [HttpPost]
-    [Authorize(Roles = "Manager")]
+    [Authorize(Policy = "Create")]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto dto)
     {
         var product = mapper.Map<Product>(dto);
@@ -40,7 +40,7 @@ public class ProductsController(IProductService productService, IMapper mapper) 
     /// <param name="dto">New product values.</param>
     /// <returns>The response.</returns>
     [HttpPut("{productId}")]
-    [Authorize(Roles = "Manager")]
+    [Authorize(Policy = "Update")]
     public async Task<IActionResult> UpdateProduct([FromRoute] int productId, [FromBody] UpdateProductDto dto)
     {
         var product = mapper.Map<Product>(dto);
@@ -57,7 +57,7 @@ public class ProductsController(IProductService productService, IMapper mapper) 
     /// <param name="productId">Product id to get.</param>
     /// <returns>The response.</returns>
     [HttpGet("{productId}")]
-    [Authorize(Roles = "Manager,StoreCustomer")]
+    [Authorize(Policy = "Read")]
     public async Task<IActionResult> GetProduct([FromRoute] int productId)
     {
         var product = await productService.GetProduct(productId);
@@ -77,7 +77,7 @@ public class ProductsController(IProductService productService, IMapper mapper) 
     /// <param name="parameters">Parameters to filter products by.</param>
     /// <returns>The response.</returns>
     [HttpGet]
-    [Authorize(Roles = "Manager,StoreCustomer")]
+    [Authorize(Policy = "Read")]
     public async Task<IActionResult> GetProducts([FromQuery] GetProductsQuery parameters)
     {
         var products = await productService.GetProducts(parameters.CategoryId, parameters.Page, parameters.Limit);
@@ -92,7 +92,7 @@ public class ProductsController(IProductService productService, IMapper mapper) 
     /// <param name="productId">Product to remove.</param>
     /// <returns>The response.</returns>
     [HttpDelete("{productId}")]
-    [Authorize(Roles = "Manager")]
+    [Authorize(Policy = "Delete")]
     public async Task<IActionResult> RemoveProduct([FromRoute] int productId)
     {
         await productService.RemoveProduct(productId);
