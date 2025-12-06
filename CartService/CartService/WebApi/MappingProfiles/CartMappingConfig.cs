@@ -2,20 +2,19 @@ using CartApp.Models;
 using CartApp.WebApi.Dtos;
 using Mapster;
 
-namespace CartApp.WebApi.MappingProfiles
+namespace CartApp.WebApi.MappingProfiles;
+
+/// <summary>
+/// Mapping configuration for Cart.
+/// </summary>
+public class CartMappingConfig : IRegister
 {
     /// <summary>
-    /// Mapping configuration for Cart.
+    /// Registers the mapping configuration.
     /// </summary>
-    public class CartMappingConfig : IRegister
+    /// <param name="config">The Mapster type adapter configuration.</param>
+    public void Register(TypeAdapterConfig config)
     {
-        /// <summary>
-        /// Registers the mapping configuration.
-        /// </summary>
-        /// <param name="config">The Mapster type adapter configuration.</param>
-        public void Register(TypeAdapterConfig config)
-        {
-            config.NewConfig<Cart, ResponseCart>();
-        }
+        config.NewConfig<Cart, ResponseCart>();
     }
 }

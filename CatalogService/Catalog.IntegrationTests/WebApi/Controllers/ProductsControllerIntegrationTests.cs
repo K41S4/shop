@@ -1,11 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+using Catalog.Persistence.Entities;
 using Catalog.WebAPI;
 using Catalog.WebAPI.DTOs.Product;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Catalog.Persistence.Entities;
-using Shouldly;
 
 namespace Catalog.IntegrationTests.WebApi.Controllers
 {

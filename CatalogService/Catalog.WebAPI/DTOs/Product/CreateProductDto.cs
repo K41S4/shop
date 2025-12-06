@@ -39,6 +39,6 @@ namespace Catalog.WebAPI.DTOs.Product
         /// Gets or sets the category id this product belongs to.
         /// </summary>
         [Required]
-        public int CategoryId { get; set; }
+        public required int CategoryId { get; set; }
     }
 }

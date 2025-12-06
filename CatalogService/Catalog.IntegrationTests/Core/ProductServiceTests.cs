@@ -92,6 +92,15 @@ namespace Catalog.IntegrationTests.Core
         /// <summary>
         /// Disposes the test resources.
         /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes the test resources.
+        /// </summary>
         /// <param name="disposing">Whether disposing is in progress.</param>
         protected virtual void Dispose(bool disposing)
         {
@@ -104,15 +113,6 @@ namespace Catalog.IntegrationTests.Core
 
                 this.disposed = true;
             }
-        }
-
-        /// <summary>
-        /// Disposes the test resources.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

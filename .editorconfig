@@ -1,0 +1,16 @@
+﻿[*.cs]
+
+# Sort 'using' directives, System first
+dotnet_sort_system_directives_first = true
+
+# Prefer 'is null' pattern over '== null' for null checks (e.g., 'if (x is null)' instead of 'if (x == null)')
+csharp_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
+
+# Require explicit accessibility modifiers (e.g., 'public', 'private', 'protected') on all type and member declarations
+dotnet_style_require_accessibility_modifiers = always:suggestion
+
+# SA1633: File should have header
+dotnet_diagnostic.SA1633.severity = none
+
+# SA1200: Using directives should be placed correctly
+dotnet_diagnostic.SA1200.severity = none
