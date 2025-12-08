@@ -3,6 +3,9 @@ bin/
 obj/
 out/
 
+# SonarQube
+.sonarqube/
+
 # User-specific files
 *.user
 *.suo

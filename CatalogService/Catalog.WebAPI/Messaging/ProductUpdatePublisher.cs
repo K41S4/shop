@@ -1,7 +1,7 @@
+using System.Text.Json;
 using Catalog.Core.Messaging;
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 
 namespace Catalog.WebAPI.Messaging;
 
@@ -67,8 +67,16 @@ public class ProductUpdatePublisher : IProductUpdatePublisher, IDisposable
         catch (Exception ex)
         {
             this.logger.LogError(ex, "Unexpected error publishing product update message. ProductId: {ProductId}", message.ProductId);
-            throw;
         }
+    }
+
+    /// <summary>
+    /// Disposes the test resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>
@@ -87,14 +95,5 @@ public class ProductUpdatePublisher : IProductUpdatePublisher, IDisposable
 
             this.disposed = true;
         }
-    }
-
-    /// <summary>
-    /// Disposes the test resources.
-    /// </summary>
-    public void Dispose()
-    {
-        this.Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

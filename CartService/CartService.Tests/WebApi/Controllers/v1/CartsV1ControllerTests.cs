@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Shouldly;
 
-namespace CartApp.UnitTests.WebApi.Controllers.v1
+namespace CartApp.UnitTests.WebApi.Controllers.V1
 {
     /// <summary>
     /// Unit tests for the CartsV1Controller class.

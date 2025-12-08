@@ -101,6 +101,20 @@ public class ProductUpdateConsumer : BackgroundService
     }
 
     /// <inheritdoc/>
+    public override void Dispose()
+    {
+        if (this.disposed)
+        {
+            return;
+        }
+
+        this.consumer.Dispose();
+        this.dlqProducer.Dispose();
+        this.disposed = true;
+        base.Dispose();
+    }
+
+    /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
@@ -195,19 +209,5 @@ public class ProductUpdateConsumer : BackgroundService
 
             await this.dlqProducer.ProduceAsync(this.deadLetterTopic, dlqMessage, token);
             }, cancellationToken);
-    }
-
-    /// <inheritdoc/>
-    public override void Dispose()
-    {
-        if (this.disposed)
-        {
-            return;
-        }
-
-        this.consumer.Dispose();
-        this.dlqProducer.Dispose();
-        this.disposed = true;
-        base.Dispose();
     }
 }
