@@ -1,7 +1,7 @@
 using CartApp.BusinessLogic.Exceptions;
 using CartApp.BusinessLogic.Services;
 using CartApp.Models;
-using CartApp.WebApi.Controllers.v2;
+using CartApp.WebApi.Controllers.V2;
 using CartApp.WebApi.Dtos;
 using CartApp.WebApi.MappingProfiles;
 using FluentAssertions;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Shouldly;
 
-namespace CartApp.UnitTests.WebApi.Controllers.v2
+namespace CartApp.UnitTests.WebApi.Controllers.V2
 {
     /// <summary>
     /// Unit tests for the CartsV2Controller class.

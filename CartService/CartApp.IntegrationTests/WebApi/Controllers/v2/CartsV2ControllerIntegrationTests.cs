@@ -5,7 +5,7 @@ using CartApp.WebApi.Dtos;
 using FluentAssertions;
 using Shouldly;
 
-namespace CartApp.IntegrationTests.WebApi.Controllers.v2
+namespace CartApp.IntegrationTests.WebApi.Controllers.V2
 {
     /// <summary>
     /// Integration tests for the CartsV2Controller class.

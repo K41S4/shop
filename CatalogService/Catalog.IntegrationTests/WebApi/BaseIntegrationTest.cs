@@ -1,7 +1,7 @@
-﻿using Catalog.WebAPI;
+﻿using Catalog.Persistence.DBContext;
+using Catalog.WebAPI;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Catalog.Persistence.DBContext;
 
 namespace Catalog.IntegrationTests.WebApi
 {

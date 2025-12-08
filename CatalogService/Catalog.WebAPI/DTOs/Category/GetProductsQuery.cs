@@ -11,18 +11,18 @@ namespace Catalog.WebAPI.DTOs.Category
         /// Gets or sets category id to filter products by.
         /// </summary>
         [Required]
-        public int CategoryId { get; set; }
+        public required int CategoryId { get; set; }
 
         /// <summary>
         /// Gets or sets the requested page for pagination.
         /// </summary>
         [Range(0, int.MaxValue, ErrorMessage = "Page must be positive number.")]
-        public int Page { get; set; }
+        public required int Page { get; set; }
 
         /// <summary>
         /// Gets or sets the requested limit for pagination.
         /// </summary>
         [Range(0, int.MaxValue, ErrorMessage = "Limit must be positive number.")]
-        public int Limit { get; set; }
+        public required int Limit { get; set; }
     }
 }

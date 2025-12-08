@@ -6,7 +6,7 @@ using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CartApp.WebApi.Controllers.v2;
+namespace CartApp.WebApi.Controllers.V2;
 
 /// <summary>
 /// Controller for Cart operations.

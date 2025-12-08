@@ -24,16 +24,8 @@ public class ProductUpdateHandler : IProductUpdateHandler
     /// <inheritdoc/>
     public async Task HandleProductUpdateAsync(ProductUpdatedMessage message, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            await this.cartService.UpdateCartItem(message.ProductId, message.Name, message.Price, message.ImageUrl);
+        await this.cartService.UpdateCartItem(message.ProductId, message.Name, message.Price, message.ImageUrl);
 
-            this.logger.LogInformation("Successfully updated cart items for ProductId: {ProductId}", message.ProductId);
-        }
-        catch (Exception ex)
-        {
-            this.logger.LogError(ex, "Error handling product update. ProductId: {ProductId}", message.ProductId);
-            throw;
-        }
+        this.logger.LogInformation("Successfully updated cart items for ProductId: {ProductId}", message.ProductId);
     }
 }

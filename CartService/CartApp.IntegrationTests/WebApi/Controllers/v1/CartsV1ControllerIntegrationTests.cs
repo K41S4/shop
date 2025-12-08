@@ -6,7 +6,7 @@ using FluentAssertions;
 using Mapster;
 using Shouldly;
 
-namespace CartApp.IntegrationTests.WebApi.Controllers.v1
+namespace CartApp.IntegrationTests.WebApi.Controllers.V1
 {
     /// <summary>
     /// Integration tests for the CartsV1Controller class.

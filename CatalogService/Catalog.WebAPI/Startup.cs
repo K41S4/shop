@@ -1,20 +1,20 @@
 ﻿using System.Reflection;
-using Catalog.Core.Repositories;
-using Catalog.Core.Services.Interfaces;
-using Catalog.Core.Services;
-using Catalog.Persistence.MappingProfiles;
-using Catalog.WebAPI.Middlewares;
-using Catalog.Persistence.Repositories;
 using AutoMapper;
+using Catalog.Core.MappingProfiles;
+using Catalog.Core.Messaging;
+using Catalog.Core.Repositories;
+using Catalog.Core.Services;
+using Catalog.Core.Services.Interfaces;
 using Catalog.Persistence.DBContext;
+using Catalog.Persistence.MappingProfiles;
+using Catalog.Persistence.Repositories;
+using Catalog.WebAPI.Controllers;
 using Catalog.WebAPI.Mapping;
+using Catalog.WebAPI.Messaging;
+using Catalog.WebAPI.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
-using Catalog.Core.Messaging;
-using Catalog.WebAPI.Controllers;
-using Catalog.WebAPI.Messaging;
-using Catalog.Core.MappingProfiles;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Catalog.WebAPI
@@ -25,11 +25,6 @@ namespace Catalog.WebAPI
     public class Startup
     {
         /// <summary>
-        /// Gets configuration property.
-        /// </summary>
-        public IConfiguration Configuration { get; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
         /// <param name="configuration">Configuration.</param>
@@ -37,6 +32,11 @@ namespace Catalog.WebAPI
         {
             this.Configuration = configuration;
         }
+
+        /// <summary>
+        /// Gets configuration property.
+        /// </summary>
+        public IConfiguration Configuration { get; }
 
         /// <summary>
         /// Configure services.
@@ -78,6 +78,37 @@ namespace Catalog.WebAPI
             services.AddSingleton<IProductUpdatePublisher, ProductUpdatePublisher>();
 
             this.ConfigureDbContext(services);
+        }
+
+        /// <summary>
+        /// Configure application.
+        /// </summary>
+        /// <param name="app">Application builder.</param>
+        /// <param name="env">Web host environment.</param>
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "OpenAPI v1");
+                });
+            }
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
 
         /// <summary>
@@ -128,37 +159,6 @@ namespace Catalog.WebAPI
                 .AddPolicy("Delete", policy =>
                     policy.RequireClaim("permission", "Delete")
                           .RequireRole("Manager"));
-        }
-
-        /// <summary>
-        /// Configure application.
-        /// </summary>
-        /// <param name="app">Application builder.</param>
-        /// <param name="env">Web host environment.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "OpenAPI v1");
-                });
-            }
-
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
         }
     }
 }
