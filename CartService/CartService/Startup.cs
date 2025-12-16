@@ -133,6 +133,8 @@ public class Startup
     /// <param name="services">Service collection.</param>
     protected virtual void ConfigureAuthentication(IServiceCollection services)
     {
+        var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
@@ -140,7 +142,7 @@ public class Startup
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateAudience = false,
-                    ValidateIssuer = true,
+                    ValidateIssuer = !isDevelopment,
                     ValidateLifetime = true,
                 };
                 options.RequireHttpsMetadata = false;
