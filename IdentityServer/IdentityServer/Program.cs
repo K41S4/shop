@@ -83,13 +83,13 @@ namespace IdentityServer
 
             if (!await roleManager.RoleExistsAsync("Admin"))
             {
-                var managerRole = new IdentityRole("Admin");
-                await roleManager.CreateAsync(managerRole);
+                var adminRole = new IdentityRole("Admin");
+                await roleManager.CreateAsync(adminRole);
 
-                await roleManager.AddClaimAsync(managerRole, new Claim("permission", Permissions.Read));
-                await roleManager.AddClaimAsync(managerRole, new Claim("permission", Permissions.Create));
-                await roleManager.AddClaimAsync(managerRole, new Claim("permission", Permissions.Update));
-                await roleManager.AddClaimAsync(managerRole, new Claim("permission", Permissions.Delete));
+                await roleManager.AddClaimAsync(adminRole, new Claim("permission", Permissions.Read));
+                await roleManager.AddClaimAsync(adminRole, new Claim("permission", Permissions.Create));
+                await roleManager.AddClaimAsync(adminRole, new Claim("permission", Permissions.Update));
+                await roleManager.AddClaimAsync(adminRole, new Claim("permission", Permissions.Delete));
             }
 
             if (!await roleManager.RoleExistsAsync("Manager"))
