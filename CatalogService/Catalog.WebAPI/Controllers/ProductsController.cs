@@ -99,4 +99,34 @@ public class ProductsController(IProductService productService, IMapper mapper) 
 
         return this.NoContent();
     }
+
+    /// <summary>
+    /// Endpoint for getting product properties by product id.
+    /// </summary>
+    /// <param name="productId">Product id to get properties for.</param>
+    /// <returns>The response.</returns>
+    [HttpGet("{productId}/properties")]
+    [Authorize(Policy = "Read")]
+    public Task<IActionResult> GetProductProperties([FromRoute] int productId)
+    {
+        var properties = new Dictionary<string, string>();
+
+        switch (productId)
+        {
+            case 1:
+                properties["category"] = "Samsung";
+                properties["model"] = "S10";
+                break;
+            case 2:
+                properties["category"] = "Apple";
+                properties["model"] = "iPhone 13";
+                break;
+            default:
+                properties["category"] = "Generic";
+                properties["model"] = "Standard";
+                break;
+        }
+
+        return Task.FromResult<IActionResult>(this.Ok(properties));
+    }
 }

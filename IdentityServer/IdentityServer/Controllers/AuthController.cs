@@ -46,7 +46,11 @@ public class AuthController : ControllerBase
             return this.BadRequest(result.Errors);
         }
 
-        await this.userManager.AddToRoleAsync(user, dto.Role);
+        foreach (var role in dto.Roles)
+        {
+            await this.userManager.AddToRoleAsync(user, role);
+        }
+
         return this.Ok("User registered");
     }
 }
