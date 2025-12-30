@@ -39,8 +39,7 @@ public class RegisterDto
     public string Password { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the role.
+    /// Gets or sets the roles.
     /// </summary>
-    [Required]
-    public string Role { get; set; } = string.Empty;
+    public string[] Roles { get; set; } = [];
 }

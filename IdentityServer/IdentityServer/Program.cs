@@ -81,6 +81,17 @@ namespace IdentityServer
 
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
+            if (!await roleManager.RoleExistsAsync("Admin"))
+            {
+                var adminRole = new IdentityRole("Admin");
+                await roleManager.CreateAsync(adminRole);
+
+                await roleManager.AddClaimAsync(adminRole, new Claim("permission", Permissions.Read));
+                await roleManager.AddClaimAsync(adminRole, new Claim("permission", Permissions.Create));
+                await roleManager.AddClaimAsync(adminRole, new Claim("permission", Permissions.Update));
+                await roleManager.AddClaimAsync(adminRole, new Claim("permission", Permissions.Delete));
+            }
+
             if (!await roleManager.RoleExistsAsync("Manager"))
             {
                 var managerRole = new IdentityRole("Manager");
