@@ -28,6 +28,12 @@ namespace Catalog.Core.Services
         }
 
         /// <inheritdoc/>
+        public async Task<IEnumerable<Category>> GetCategoriesByIds(IReadOnlyList<int> ids)
+        {
+            return await this.repository.GetCategoriesByIds(ids);
+        }
+
+        /// <inheritdoc/>
         public async Task<IEnumerable<Category>> GetCategories()
         {
             return await this.repository.GetCategories();

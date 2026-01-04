@@ -34,6 +34,16 @@ namespace Catalog.Persistence.Repositories
         }
 
         /// <inheritdoc/>
+        public async Task<IEnumerable<Category>> GetCategoriesByIds(IReadOnlyList<int> ids)
+        {
+            var categoryEntities = await this.dbContext.Categories
+                .Where(c => ids.Contains(c.Id))
+                .ToListAsync();
+
+            return this.mapper.Map<IEnumerable<Category>>(categoryEntities);
+        }
+
+        /// <inheritdoc/>
         public async Task<IEnumerable<Category>> GetCategories()
         {
             var categoryEntities = await this.dbContext.Categories.ToListAsync();
@@ -73,6 +83,8 @@ namespace Catalog.Persistence.Repositories
             categoryEntity.Name = category.Name.Value!;
             categoryEntity.Image = category.Image?.Value;
             categoryEntity.ParentCategoryId = category.ParentCategoryId;
+
+            this.dbContext.Categories.Update(categoryEntity);
 
             await this.dbContext.SaveChangesAsync();
         }
