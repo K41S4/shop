@@ -15,6 +15,13 @@ namespace Catalog.Core.Repositories
         public Task<Product?> GetProduct(int id);
 
         /// <summary>
+        /// Gets multiple products by their ids.
+        /// </summary>
+        /// <param name="ids">The product ids.</param>
+        /// <returns>A collection of found products.</returns>
+        public Task<IEnumerable<Product>> GetProductsByIds(IReadOnlyList<int> ids);
+
+        /// <summary>
         /// Gets products with filtering.
         /// </summary>
         /// <param name="categoryId">The category id to filter by.</param>
@@ -36,6 +43,20 @@ namespace Catalog.Core.Repositories
         /// <param name="productId">The product id.</param>
         /// <returns>Task.</returns>
         public Task RemoveProduct(int productId);
+
+        /// <summary>
+        /// Gets products for multiple categories.
+        /// </summary>
+        /// <param name="categoryIds">The category ids.</param>
+        /// <returns>A collection of products for the specified categories.</returns>
+        public Task<IEnumerable<Product>> GetProductsByCategoryIds(IReadOnlyList<int> categoryIds);
+
+        /// <summary>
+        /// Removes all products by category id.
+        /// </summary>
+        /// <param name="categoryId">The category id.</param>
+        /// <returns>Task.</returns>
+        public Task RemoveProductsByCategoryId(int categoryId);
 
         /// <summary>
         /// Updates an existing product.

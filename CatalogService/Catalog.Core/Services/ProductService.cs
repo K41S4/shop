@@ -39,6 +39,12 @@ namespace Catalog.Core.Services
         }
 
         /// <inheritdoc/>
+        public async Task<IEnumerable<Product>> GetProductsByIds(IReadOnlyList<int> ids)
+        {
+            return await this.productRepo.GetProductsByIds(ids);
+        }
+
+        /// <inheritdoc/>
         public async Task<IEnumerable<Product>> GetProducts(int categoryId, int page, int limit)
         {
             var category = await this.categoryRepo.GetCategory(categoryId);
@@ -73,6 +79,33 @@ namespace Catalog.Core.Services
             }
 
             await this.productRepo.RemoveProduct(id);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<Product>> GetProductsByCategoryIds(IReadOnlyList<int> categoryIds)
+        {
+            var categories = await this.categoryRepo.GetCategoriesByIds(categoryIds);
+            var foundCategoryIds = categories.Select(c => c.Id).ToHashSet();
+            var invalidCategories = categoryIds.Where(id => !foundCategoryIds.Contains(id)).ToList();
+
+            if (invalidCategories.Any())
+            {
+                throw new InvalidCategoryException();
+            }
+
+            return await this.productRepo.GetProductsByCategoryIds(categoryIds);
+        }
+
+        /// <inheritdoc/>
+        public async Task RemoveProductsByCategoryId(int categoryId)
+        {
+            var category = await this.categoryRepo.GetCategory(categoryId);
+            if (category is null)
+            {
+                throw new InvalidCategoryException();
+            }
+
+            await this.productRepo.RemoveProductsByCategoryId(categoryId);
         }
 
         /// <inheritdoc/>

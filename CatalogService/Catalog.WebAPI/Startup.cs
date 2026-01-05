@@ -9,9 +9,14 @@ using Catalog.Persistence.DBContext;
 using Catalog.Persistence.MappingProfiles;
 using Catalog.Persistence.Repositories;
 using Catalog.WebAPI.Controllers;
+using Catalog.WebAPI.GraphQL.DataLoaders;
+using Catalog.WebAPI.GraphQL.Mutations;
+using Catalog.WebAPI.GraphQL.Queries;
+using Catalog.WebAPI.GraphQL.Types;
 using Catalog.WebAPI.Mapping;
 using Catalog.WebAPI.Messaging;
 using Catalog.WebAPI.Middlewares;
+using HotChocolate.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -65,7 +70,7 @@ namespace Catalog.WebAPI
             services.AddSwaggerGen(options =>
             {
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
             });
 
@@ -76,6 +81,17 @@ namespace Catalog.WebAPI
 
             services.Configure<KafkaConfig>(this.Configuration.GetSection("Kafka"));
             services.AddSingleton<IProductUpdatePublisher, ProductUpdatePublisher>();
+
+            services
+                .AddGraphQLServer()
+                .AddAuthorization()
+                .AddQueryType<CatalogQuery>()
+                .AddMutationType<CatalogMutations>()
+                .AddType<CategoryType>()
+                .AddType<ProductType>()
+                .AddDataLoader<CategoryDataLoader>()
+                .AddDataLoader<ProductDataLoader>()
+                .AddDataLoader<ProductsByCategoryDataLoader>();
 
             this.ConfigureDbContext(services);
         }
@@ -108,6 +124,11 @@ namespace Catalog.WebAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapGraphQL()
+                    .WithOptions(new GraphQLServerOptions
+                    {
+                        Tool = { Enable = env.IsDevelopment() },
+                    });
             });
         }
 

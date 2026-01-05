@@ -34,6 +34,16 @@ namespace Catalog.Persistence.Repositories
         }
 
         /// <inheritdoc/>
+        public async Task<IEnumerable<Product>> GetProductsByIds(IReadOnlyList<int> ids)
+        {
+            var productEntities = await this.dbContext.Products
+                .Where(p => ids.Contains(p.Id))
+                .ToListAsync();
+
+            return this.mapper.Map<IEnumerable<Product>>(productEntities);
+        }
+
+        /// <inheritdoc/>
         public async Task<IEnumerable<Product>> GetProducts(int categoryId, int page, int limit)
         {
             var productEntities = await this.dbContext.Products
@@ -67,6 +77,26 @@ namespace Catalog.Persistence.Repositories
         }
 
         /// <inheritdoc/>
+        public async Task<IEnumerable<Product>> GetProductsByCategoryIds(IReadOnlyList<int> categoryIds)
+        {
+            var productEntities = await this.dbContext.Products
+                .Where(p => categoryIds.Contains(p.CategoryId))
+                .OrderBy(p => p.CategoryId)
+                .ThenBy(p => p.Id)
+                .ToListAsync();
+
+            return this.mapper.Map<IEnumerable<Product>>(productEntities);
+        }
+
+        /// <inheritdoc/>
+        public async Task RemoveProductsByCategoryId(int categoryId)
+        {
+            await this.dbContext.Products
+                .Where(p => p.CategoryId == categoryId)
+                .ExecuteDeleteAsync();
+        }
+
+        /// <inheritdoc/>
         public async Task UpdateProduct(Product product)
         {
             var productEntity = await this.dbContext.Products.FindAsync(product.Id);
@@ -81,6 +111,8 @@ namespace Catalog.Persistence.Repositories
             productEntity.Description = product.Description;
             productEntity.Image = product.Image?.Value;
             productEntity.CategoryId = product.CategoryId;
+
+            this.dbContext.Products.Update(productEntity);
 
             await this.dbContext.SaveChangesAsync();
         }

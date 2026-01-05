@@ -15,6 +15,13 @@ namespace Catalog.Core.Services.Interfaces
         public Task<Category?> GetCategory(int id);
 
         /// <summary>
+        /// Gets multiple categories by their ids.
+        /// </summary>
+        /// <param name="ids">The category ids.</param>
+        /// <returns>A collection of found categories.</returns>
+        public Task<IEnumerable<Category>> GetCategoriesByIds(IReadOnlyList<int> ids);
+
+        /// <summary>
         /// Gets all categories.
         /// </summary>
         /// <returns>A collection of all categories.</returns>
