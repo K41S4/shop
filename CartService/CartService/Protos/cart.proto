@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+option csharp_namespace = "CartApp.Grpc";
+
+package cart;
+
+// Cart gRPC service definition
+service CartService {
+  // Unary RPC: Get list of items of the cart object
+  rpc GetCartItems (GetCartItemsRequest) returns (GetCartItemsResponse);
+
+  // Server stream RPC: Get list of items of the cart object
+  rpc GetCartItemsStream (GetCartItemsRequest) returns (stream CartItemResponse);
+
+  // Client stream RPC: Add item to the cart and return updated cart object
+  rpc AddItemsToCart (stream AddItemRequest) returns (CartResponse);
+
+  // Bi-directional RPC: Add item to the cart and return updated cart object
+  rpc AddItemsToCartBidirectional (stream AddItemRequest) returns (stream CartResponse);
+}
+
+// Request message for getting cart items
+message GetCartItemsRequest {
+  string cart_id = 1;
+}
+
+// Response message for getting cart items (unary)
+message GetCartItemsResponse {
+  repeated CartItemResponse items = 1;
+}
+
+// Request message for adding item to cart
+message AddItemRequest {
+  string cart_id = 1;
+  CartItemRequest item = 2;
+}
+
+// Cart item request message
+message CartItemRequest {
+  int32 id = 1;
+  string name = 2;
+  double price = 3;
+  int32 quantity = 4;
+  string image_url = 5;
+  string image_description = 6;
+}
+
+// Cart item response message
+message CartItemResponse {
+  int32 id = 1;
+  string name = 2;
+  double price = 3;
+  int32 quantity = 4;
+  string image_url = 5;
+  string image_description = 6;
+}
+
+// Cart response message
+message CartResponse {
+  string cart_id = 1;
+  repeated CartItemResponse items = 2;
+}

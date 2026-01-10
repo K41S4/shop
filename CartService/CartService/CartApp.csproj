@@ -32,6 +32,15 @@
     <PackageReference Include="Confluent.Kafka" Version="2.5.3" />
     <PackageReference Include="Polly" Version="8.4.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.76.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\cart.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>

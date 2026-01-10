@@ -2,6 +2,7 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using CartApp.BusinessLogic.Services;
+using CartApp.Grpc;
 using CartApp.Messaging;
 using CartApp.Persistence.Repositories;
 using CartApp.WebApi.Controllers.v1;
@@ -67,7 +68,7 @@ public class Startup
             options.IncludeXmlComments(xmlPath);
         });
 
-        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<ICartService, BusinessLogic.Services.CartService>();
         services.AddScoped<ICartRepository, CartRepository>();
         this.ConfigureDbContext(services);
 
@@ -80,6 +81,8 @@ public class Startup
         services.Configure<KafkaConfig>(this.Configuration.GetSection("Kafka"));
         services.AddScoped<IProductUpdateHandler, ProductUpdateHandler>();
         services.AddHostedService<ProductUpdateConsumer>();
+
+        services.AddGrpc();
     }
 
     /// <summary>
@@ -102,7 +105,12 @@ public class Startup
             });
         }
 
-        app.UseHttpsRedirection();
+        var isGrpcProfile = Environment.GetEnvironmentVariable("LAUNCH_PROFILE") == "grpc";
+        if (!isGrpcProfile)
+        {
+            app.UseHttpsRedirection();
+        }
+
         app.UseRouting();
         app.UseAuthentication();
         app.UseMiddleware<AccessTokenLoggingMiddleware>();
@@ -110,6 +118,7 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.MapGrpcService<CartGrpcService>();
         });
     }
 
