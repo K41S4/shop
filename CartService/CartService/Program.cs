@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+
 namespace CartApp
 {
     /// <summary>
@@ -24,6 +26,15 @@ namespace CartApp
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+
+                    var isGrpcProfile = Environment.GetEnvironmentVariable("LAUNCH_PROFILE") == "grpc";
+                    if (isGrpcProfile)
+                    {
+                        webBuilder.UseKestrel(options =>
+                        {
+                            options.ListenLocalhost(9046, o => o.Protocols = HttpProtocols.Http2);
+                        });
+                    }
                 });
     }
 }
